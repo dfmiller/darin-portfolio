@@ -27,7 +27,6 @@
         <div class="wrap">
           <SectionHeading
             title="Selected work"
-            description="A first pass based on the work currently documented. Case studies can be expanded with approved screenshots, metrics, and technical details."
           />
           <CaseStudy />
         </div>

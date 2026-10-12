@@ -69,7 +69,7 @@ a {
 }
 
 .hero {
-  padding: 110px 0 90px;
+  padding: 64px 0 90px;
   border-bottom: 1px solid var(--line);
 }
 
@@ -138,6 +138,12 @@ section {
   max-width: 720px;
   margin: 0;
   color: var(--muted);
+}
+
+.case-study-list {
+  display: flex;
+  flex-direction: column;
+  gap: 32px;
 }
 
 .case-study {
@@ -267,7 +273,7 @@ footer {
   }
 
   .hero {
-    padding: 75px 0;
+    padding: 32px 0;
   }
 
   section {

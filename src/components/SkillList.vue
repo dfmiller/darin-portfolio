@@ -1,8 +1,8 @@
 <template>
   <div class="skills">
-    <span v-for="skill in skills" :key="skill" class="skill">
+    <v-chip v-for="skill in skills" :key="skill">
       {{ skill }}
-    </span>
+    </v-chip>
   </div>
 </template>
 

@@ -38,11 +38,12 @@
       </div>
 
       <div class="tech-row">
-        <span>Vue.js</span>
-        <span>Laravel</span>
-        <span>Blade</span>
-        <span>JavaScript</span>
-        <span>Design Systems</span>
+        <v-chip>Vue.js</v-chip>
+        <v-chip>Vuetify.js</v-chip>
+        <v-chip>Laravel</v-chip>
+        <v-chip>Blade</v-chip>
+        <v-chip>JavaScript</v-chip>
+        <v-chip>Design Systems</v-chip>
       </div>
     </article>
 
@@ -148,12 +149,12 @@
       </div>
 
       <div class="tech-row">
-        <span>Vue 2</span>
-        <span>Vue 3</span>
-        <span>Storybook</span>
-        <span>Sass</span>
-        <span>Design Systems</span>
-        <span>CSV Validation</span>
+        <v-chip>Vue 2</v-chip>
+        <v-chip>Vue 3</v-chip>
+        <v-chip>Storybook</v-chip>
+        <v-chip>Sass</v-chip>
+        <v-chip>Design Systems</v-chip>
+        <v-chip>CSV Validation</v-chip>
       </div>
     </article>
 

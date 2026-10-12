@@ -1,8 +1,8 @@
 <template>
   <BaseApp id="top" title="Darin F. Miller">
     <v-main>
-      <header class="hero">
-        <div class="wrap">
+      <header class="hero">        
+        <v-container class="wrap">
           <div class="eyebrow">Senior Front-End Engineer</div>
 
           <h1>Simplifying Complex Interfaces</h1>
@@ -15,23 +15,22 @@
           </p>
 
           <div class="actions">
-            <a class="button primary" href="#work">View selected work</a>
-            <a class="button" href="mailto:darinfmiller@gmail.com">Get in touch</a>
+            <v-btn href="#work">View selected work</v-btn>
           </div>
-        </div>
+        </v-container>
       </header>
 
       <section id="work">
-        <div class="wrap">
+        <v-container class="wrap">
           <SectionHeading
             title="Selected work"
           />
           <CaseStudy />
-        </div>
+        </v-container>
       </section>
 
       <section id="strengths">
-        <div class="wrap">
+        <v-container class="wrap">
           <SectionHeading title="What I bring" />
 
           <div class="card-grid">
@@ -41,52 +40,49 @@
               <p>{{ item.description }}</p>
             </article>
           </div>
-        </div>
+        </v-container>
       </section>
 
       <section id="skills">
-        <div class="wrap">
+        <v-container class="wrap">
           <SectionHeading
             title="Technical toolkit"
             description="Technologies and practices represented in my professional experience."
           />
           <SkillList :skills="skills" />
-        </div>
+        </v-container>
       </section>
 
       <section id="experience">
-        <div class="wrap">
+        <v-container class="wrap">
           <SectionHeading title="Experience" />
           <ExperienceTimeline :experience="experience" />
-        </div>
+        </v-container>
       </section>
 
       <section id="contact">
-        <div class="wrap">
+        <v-container class="wrap">
           <SectionHeading
             title="Let's talk"
             description="Interested in building maintainable front-end systems, improving product experiences, or untangling complicated interfaces?"
           />
 
           <div class="actions">
-            <a class="button primary" href="mailto:darinfmiller@gmail.com">
-              darinfmiller@gmail.com
-            </a>
-            <a
-              class="button"
+            <v-btn
+              class="text-none"
               href="https://www.linkedin.com/in/darinfmiller"
               target="_blank"
               rel="noreferrer"
             >
               LinkedIn
-            </a>
+            </v-btn>
           </div>
-        </div>
+        </v-container>
       </section>
     </v-main>
 
     <footer>
-      <div class="wrap">&copy; {{ year }} Darin F. Miller</div>
+      <v-container class="wrap">&copy; {{ year }} Darin F. Miller</v-container>
     </footer>
   </BaseApp>
 </template>

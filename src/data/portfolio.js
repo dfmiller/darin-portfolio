@@ -16,6 +16,7 @@ export const skills = [
   "MySQL",
   "Git",
   "AWS",
+  "D3"
 ];
 
 export const experience = [
@@ -35,21 +36,21 @@ export const experience = [
   },
   {
     dates: "Mar 2018 – Feb 2022",
-    title: "Web Developer",
+    title: "Senior Front-end Developer",
     company: "Kingsley Management Corp",
-    description: "Web development experience.",
+    description: "Migrated an existing internal web application to Vue.js, developed a mobile application using Flutter, resolved bugs in legacy internal systems, and improved styling across websites and mobile applications.",
   },
   {
     dates: "Apr 2015 – Oct 2017",
     title: "Front-End Developer",
     company: "Leo Insights",
-    description: "Front-end development experience.",
+    description: "Development of BI UIs showing user configurable tables, diagrams, and charts  Also created company’s responsive website.",
   },
   {
     dates: "Nov 2011 – Mar 2015",
     title: "Web Developer",
     company: "Marketecture",
-    description: "Web development experience.",
+    description: "Development of multiple company website creation tool, with related tools, used by thousands of small businesses.",
   },
 ];
 

@@ -1,8 +1,6 @@
 <template>
-  <div id="top">
-    <SiteNav />
-
-    <main>
+  <BaseApp id="top" title="Darin F. Miller">
+    <v-main>
       <header class="hero">
         <div class="wrap">
           <div class="eyebrow">Senior Front-End Engineer</div>
@@ -85,17 +83,18 @@
           </div>
         </div>
       </section>
-    </main>
+    </v-main>
 
     <footer>
-      <div class="wrap">© {{ year }} Darin F. Miller</div>
+      <div class="wrap">&copy; {{ year }} Darin F. Miller</div>
     </footer>
-  </div>
+  </BaseApp>
 </template>
 
 <script setup>
 import { computed } from "vue";
-import SiteNav from "./components/SiteNav.vue";
+
+import BaseApp from './components/BaseApp.vue';
 import SectionHeading from "./components/SectionHeading.vue";
 import CaseStudy from "./components/CaseStudy.vue";
 import SkillList from "./components/SkillList.vue";

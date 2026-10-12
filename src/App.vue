@@ -7,10 +7,10 @@
         <div class="wrap">
           <div class="eyebrow">Senior Front-End Engineer</div>
 
-          <h1>Building interfaces that make complex products feel simple.</h1>
+          <h1>Simplifying Complex Interfaces</h1>
 
           <p class="lead">
-            Front-end engineer specializing in Vue.js, design systems,
+            Front-end engineer specializing in design systems,
             responsive web applications, and maintainable interfaces. I work
             across product, design, and engineering to turn requirements into
             reliable experiences.

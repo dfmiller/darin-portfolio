@@ -43,6 +43,16 @@
         </v-container>
       </section>
 
+      <section id="side-projects">
+          <v-container class="wrap">
+            <SectionHeading
+              title="Personal projects"
+              description="Independent applications and games built with JavaScript, HTML, and CSS."
+            />
+            <SideProjects />
+          </v-container>
+        </section>
+
       <section id="skills">
         <v-container class="wrap">
           <SectionHeading
@@ -93,6 +103,7 @@ import { computed } from "vue";
 import BaseApp from './components/BaseApp.vue';
 import SectionHeading from "./components/SectionHeading.vue";
 import CaseStudy from "./components/CaseStudy.vue";
+import SideProjects from './components/SideProjects.vue';
 import SkillList from "./components/SkillList.vue";
 import ExperienceTimeline from "./components/ExperienceTimeline.vue";
 import { experience, skills, strengths } from "./data/portfolio";

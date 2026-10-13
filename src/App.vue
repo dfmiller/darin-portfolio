@@ -23,7 +23,7 @@
       <section id="work">
         <v-container class="wrap">
           <SectionHeading
-            title="Selected work"
+            title="Selected Work"
           />
           <CaseStudy />
         </v-container>
@@ -31,7 +31,7 @@
 
       <section id="strengths">
         <v-container class="wrap">
-          <SectionHeading title="What I bring" />
+          <SectionHeading title="What I Bring" />
 
           <div class="card-grid">
             <article v-for="item in strengths" :key="item.title" class="card">
@@ -43,20 +43,10 @@
         </v-container>
       </section>
 
-      <section id="side-projects">
-          <v-container class="wrap">
-            <SectionHeading
-              title="Personal projects"
-              description="Independent applications and games built with JavaScript, HTML, and CSS."
-            />
-            <SideProjects />
-          </v-container>
-        </section>
-
       <section id="skills">
         <v-container class="wrap">
           <SectionHeading
-            title="Technical toolkit"
+            title="Technical Toolkit"
             description="Technologies and practices represented in my professional experience."
           />
           <SkillList :skills="skills" />
@@ -70,10 +60,19 @@
         </v-container>
       </section>
 
+      <section id="side-projects">
+        <v-container class="wrap">
+          <SectionHeading
+            title="Personal Projects"
+          />
+          <SideProjects />
+        </v-container>
+      </section>
+
       <section id="contact">
         <v-container class="wrap">
           <SectionHeading
-            title="Let's talk"
+            title="Let's Talk"
             description="Interested in building maintainable front-end systems, improving product experiences, or untangling complicated interfaces?"
           />
 

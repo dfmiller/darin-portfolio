@@ -46,6 +46,7 @@ const links = [
   { title: 'Strengths', href: '#strengths' },
   { title: 'Skills', href: '#skills' },
   { title: 'Experience', href: '#experience' },
+  { title: 'Personal Projects', href: '#side-projects' },
   { title: 'Contact', href: '#contact' },
 ]
 </script>

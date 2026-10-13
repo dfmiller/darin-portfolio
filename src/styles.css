@@ -198,6 +198,43 @@ section {
   color: var(--muted);
 }
 
+.project-grid {
+  grid-template-columns: 1fr;
+}
+
+.project-card {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 24px;
+}
+
+.project-cta {
+  display: inline-flex;
+  flex: 0 0 auto;
+  align-items: center;
+  gap: 8px;
+  padding: 12px 18px;
+  border: 1px solid var(--accent);
+  border-radius: 999px;
+  background: var(--accent);
+  color: var(--bg);
+  font-weight: 700;
+  line-height: 1.2;
+  text-decoration: none;
+  transition: background-color 150ms ease, color 150ms ease;
+}
+
+.project-cta:hover {
+  background: transparent;
+  color: var(--accent);
+}
+
+.project-cta:focus-visible {
+  outline: 2px solid var(--text);
+  outline-offset: 3px;
+}
+
 .tag {
   display: inline-block;
   margin-bottom: 14px;
@@ -262,6 +299,11 @@ footer {
   .case-study-details,
   .role {
     grid-template-columns: 1fr;
+  }
+
+  .project-card {
+    align-items: flex-start;
+    flex-direction: column;
   }
 
   .role {

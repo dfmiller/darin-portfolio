@@ -14,11 +14,14 @@
   </div>
 </template>
 
-<script setup>
-defineProps({
-  experience: {
-    type: Array,
-    required: true,
-  },
-});
+<script setup lang="ts">
+interface ExperienceItem {
+  dates: string
+  title: string
+  company: string
+  description: string
+}
+
+defineProps<{ experience: ExperienceItem[] }>()
 </script>
+

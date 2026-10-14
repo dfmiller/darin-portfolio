@@ -6,11 +6,7 @@
   </div>
 </template>
 
-<script setup>
-defineProps({
-  skills: {
-    type: Array,
-    required: true,
-  },
-});
+<script setup lang="ts">
+defineProps<{ skills: string[] }>()
 </script>
+

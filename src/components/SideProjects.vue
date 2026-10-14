@@ -13,12 +13,19 @@
   </div>
 </template>
 
-<script setup>
-const projects = [
+<script setup lang="ts">
+interface Project {
+  title: string
+  description: string
+  href: string
+}
+
+const projects: Project[] = [
   {
-    title: "Web & Mobile Apps",
-    description: "Independent projects exploring web and mobile application development built with JavaScript, HTML, and CSS.",
-    href: "https://javascript-apps-green.vercel.app",
+    title: 'Web & Mobile Apps',
+    description:
+      'Independent projects exploring web and mobile application development built with JavaScript, HTML, and CSS.',
+    href: 'https://javascript-apps-green.vercel.app',
   },
-];
+]
 </script>

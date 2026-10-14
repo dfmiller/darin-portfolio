@@ -1,7 +1,7 @@
 <template>
   <BaseApp id="top" title="Darin F. Miller">
     <v-main>
-      <header class="hero">        
+      <header class="hero">
         <v-container class="wrap">
           <div class="eyebrow">Senior Front-End Engineer</div>
 
@@ -22,9 +22,7 @@
 
       <section id="work">
         <v-container class="wrap">
-          <SectionHeading
-            title="Selected Work"
-          />
+          <SectionHeading title="Selected Work" />
           <CaseStudy />
         </v-container>
       </section>
@@ -62,9 +60,7 @@
 
       <section id="side-projects">
         <v-container class="wrap">
-          <SectionHeading
-            title="Personal Projects"
-          />
+          <SectionHeading title="Personal Projects" />
           <SideProjects />
         </v-container>
       </section>
@@ -96,16 +92,16 @@
   </BaseApp>
 </template>
 
-<script setup>
-import { computed } from "vue";
+<script setup lang="ts">
+import { computed } from 'vue'
 
-import BaseApp from './components/BaseApp.vue';
-import SectionHeading from "./components/SectionHeading.vue";
-import CaseStudy from "./components/CaseStudy.vue";
-import SideProjects from './components/SideProjects.vue';
-import SkillList from "./components/SkillList.vue";
-import ExperienceTimeline from "./components/ExperienceTimeline.vue";
-import { experience, skills, strengths } from "./data/portfolio";
+import BaseApp from './components/BaseApp.vue'
+import SectionHeading from './components/SectionHeading.vue'
+import CaseStudy from './components/CaseStudy.vue'
+import SideProjects from './components/SideProjects.vue'
+import SkillList from './components/SkillList.vue'
+import ExperienceTimeline from './components/ExperienceTimeline.vue'
+import { experience, skills, strengths } from './data/portfolio'
 
-const year = computed(() => new Date().getFullYear());
+const year = computed<number>(() => new Date().getFullYear())
 </script>

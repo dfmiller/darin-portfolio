@@ -2,8 +2,8 @@
   <v-app>
     <v-app-bar scroll-behavior="elevate">
       <v-app-bar-title>
-        <a class="brand" href="#top" aria-label="Darin F. Miller home">    
-        {{ title }}
+        <a class="brand" href="#top" aria-label="Darin F. Miller home">
+          {{ title }}
         </a>
       </v-app-bar-title>
 
@@ -15,10 +15,8 @@
   </v-app>
 </template>
 
-<script setup>
-import BaseNav from './BaseNav.vue';
+<script setup lang="ts">
+import BaseNav from './BaseNav.vue'
 
-defineProps({
-  title: String,
-});
+defineProps<{ title: string }>()
 </script>

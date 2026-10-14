@@ -15,6 +15,7 @@ export const skills: string[] = [
   'Vue.js 2 & 3',
   'Vuetify',
   'JavaScript',
+  'TypeScript',
   'HTML5',
   'CSS3',
   'SASS',

@@ -4,7 +4,8 @@
     class="page-header"
     :class="{ 'page-header--section-nav': links?.length }"
   >
-    <h1>{{ title }}</h1>
+    <h1 v-if="title">{{ title }}</h1>
+    <v-spacer v-else />
     <small v-if="subtitle">{{ subtitle }}</small>
     <nav v-if="links?.length" aria-label="Page sections">
       <a
@@ -20,7 +21,7 @@
 
 <script setup lang="ts">
 defineProps<{
-  title: string,
+  title?: string,
   subtitle?: string,
   links?: { label: string, href: string }[],
 }>()

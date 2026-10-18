@@ -3,8 +3,6 @@
   <div ref="homePage" class="home-page">
     <LandingHero />
     <PageHeader
-      v-show="hasScrolled"
-      title="Portfolio"
       :links="pageSections"
     />
 
@@ -77,7 +75,6 @@
 </template>
 
 <script setup lang="ts">
-import { onBeforeUnmount, onMounted, ref } from 'vue'
 import LandingHero from '../components/LandingHero.vue'
 import PageHeader from '../components/PageHeader.vue'
 import SectionHeading from '../components/SectionHeading.vue';
@@ -87,9 +84,6 @@ import ExperienceTimeline from '../components/ExperienceTimeline.vue'
 import SideProjects from '../components/SideProjects.vue'
 import { experience, skills, strengths } from '../data/portfolio.ts'
 
-const homePage = ref<HTMLElement | null>(null)
-const hasScrolled = ref(false)
-
 const pageSections = [
   { label: 'Work', href: '#work' },
   { label: 'Strengths', href: '#strengths' },
@@ -98,22 +92,6 @@ const pageSections = [
   { label: 'Side Projects', href: '#side-projects' },
   { label: 'Contact', href: '#contact' },
 ]
-
-let scrollContainer: HTMLElement | null = null
-
-function updateScrollState() {
-  hasScrolled.value = (scrollContainer?.scrollTop ?? 0) > 0
-}
-
-onMounted(() => {
-  scrollContainer = homePage.value?.closest<HTMLElement>('.page-scroll') ?? null
-  scrollContainer?.addEventListener('scroll', updateScrollState, { passive: true })
-  updateScrollState()
-})
-
-onBeforeUnmount(() => {
-  scrollContainer?.removeEventListener('scroll', updateScrollState)
-})
 
 </script>
 

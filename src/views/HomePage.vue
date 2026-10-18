@@ -75,13 +75,13 @@
 </template>
 
 <script setup lang="ts">
-import LandingHero from '../components/LandingHero.vue'
+import LandingHero from '../components/home/LandingHero.vue'
 import PageHeader from '../components/PageHeader.vue'
-import SectionHeading from '../components/SectionHeading.vue';
-import CaseStudy from '../components/CaseStudy.vue';
-import SkillList from '../components/SkillList.vue'
-import ExperienceTimeline from '../components/ExperienceTimeline.vue'
-import SideProjects from '../components/SideProjects.vue'
+import SectionHeading from '../components/home/SectionHeading.vue';
+import CaseStudy from '../components/home/CaseStudy.vue';
+import SkillList from '../components/home/SkillList.vue'
+import ExperienceTimeline from '../components/home/ExperienceTimeline.vue'
+import SideProjects from '../components/home/SideProjects.vue'
 import { experience, skills, strengths } from '../data/portfolio.ts'
 
 const pageSections = [

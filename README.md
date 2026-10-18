@@ -1,40 +1,5 @@
-# Darin F. Miller Portfolio — Vue 3 / Vite
+# Vue 3 + TypeScript + Vite
 
-## Requirements
-- Node.js 20+ recommended
-- npm
+This template should help get you started developing with Vue 3 and TypeScript in Vite. The template uses Vue 3 `<script setup>` SFCs, check out the [script setup docs](https://v3.vuejs.org/api/sfc-script-setup.html#sfc-script-setup) to learn more.
 
-## Run locally
-
-```bash
-npm install
-npm run dev
-```
-
-Open the local URL Vite prints in the terminal.
-
-## Production build
-
-```bash
-npm run build
-npm run preview
-```
-
-The production files are generated in `dist/`.
-
-## Deploying
-
-This is a standard Vite static build. It can be deployed to GitHub Pages,
-Netlify, Vercel, Cloudflare Pages, or another static host.
-
-## Project structure
-
-- `src/App.vue` — page composition
-- `src/components/` — reusable Vue components
-- `src/data/portfolio.js` — portfolio content
-- `src/styles.css` — global styling
-- `vite.config.js` — Vite configuration
-
-The content currently uses only information established in the resume and
-conversation. Older roles have intentionally not been expanded beyond what
-is currently documented.
+Learn more about the recommended Project Setup and IDE Support in the [Vue Docs TypeScript Guide](https://vuejs.org/guide/typescript/overview.html#project-setup).

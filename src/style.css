@@ -1,3 +1,22 @@
+
+html,
+body,
+#app {
+  width: 100%;
+  height: 100%;
+  margin: 0;
+}
+
+body {
+  font: 16px / 1.65 system-ui, -apple-system, BlinkMacSystemFont, Segoe UI, sans-serif;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+
+/* */
 :root {
   --bg: #0b1020;
   --panel: #121a2d;
@@ -14,6 +33,12 @@
 
 html {
   scroll-behavior: smooth;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  html {
+    scroll-behavior: auto;
+  }
 }
 
 body {
@@ -136,7 +161,7 @@ section {
 .case-study {
   padding: 30px;
   background: var(--panel);
-  border: 1px solid var(--line);
+  color: white;
   border-radius: 20px;
 }
 
@@ -179,6 +204,7 @@ section {
   display: grid;
   grid-template-columns: repeat(2, minmax(0, 1fr));
   gap: 18px;
+  color: white;
 }
 
 .card {

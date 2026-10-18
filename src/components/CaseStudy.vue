@@ -49,7 +49,6 @@
 
     <article class="case-study">
       <div class="case-study-intro">
-        <!-- <div class="eyebrow">Featured case study</div> -->
         <h3>Awardco — Design System &amp; Front-End Modernization</h3>
         <p>
           Built reusable front-end infrastructure, improved application consistency, and developed

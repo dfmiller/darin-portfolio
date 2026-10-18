@@ -51,8 +51,8 @@ const { mdAndUp } = useDisplay()
 const mobile = computed(() => !mdAndUp.value)
 
 const items = [
-  { title: 'Profile', icon: 'mdi-card-account-details', to: '/' },
-  //{ title: 'Resources', icon: 'mdi-folder-outline', to: '/resources' },
+  { title: 'Profile', icon: 'mdi-card-account-details-outline', to: '/' },
+  //{ title: 'Design System', icon: 'mdi-pencil-ruler-outline', to: '/design-system' },
   //{ title: 'Settings', icon: 'mdi-cog-outline', to: '/settings' },
 ]
 </script>

@@ -2,7 +2,7 @@
 import { createRouter, createWebHistory } from 'vue-router'
 
 import HomePage from '../views/HomePage.vue'
-import ResourcesPage from '../views/ResourcesPage.vue'
+import DesignSystemPage from '../views/DesignSystemPage.vue'
 import SettingsPage from '../views/SettingsPage.vue'
 
 const routes = [
@@ -13,10 +13,10 @@ const routes = [
     meta: { title: 'Home', showHero: true },
   },
   {
-    path: '/resources',
-    name: 'Resources',
-    component: ResourcesPage,
-    meta: { title: 'Resources' },
+    path: '/design-system',
+    name: 'Design System',
+    component: DesignSystemPage,
+    meta: { title: 'Design System' },
   },
   {
     path: '/settings',

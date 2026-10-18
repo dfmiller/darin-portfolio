@@ -101,38 +101,4 @@ const pageSections = [
   margin: 0 auto;
   padding: 24px;
 }
-
-.welcome-section {
-  padding-top: 36px;
-}
-
-.welcome-section h2 {
-  margin-bottom: 6px;
-  font-size: 1.5rem;
-  font-weight: 600;
-}
-
-.welcome-section > p {
-  color: rgb(var(--v-theme-on-background));
-  opacity: 0.7;
-}
-
-.shortcut-card {
-  transition: border-color 0.2s ease, transform 0.2s ease;
-}
-
-.shortcut-card:hover {
-  border-color: rgb(var(--v-theme-primary));
-  transform: translateY(-2px);
-}
-
-.shortcut-card h3 {
-  margin-bottom: 8px;
-  font-size: 1.1rem;
-}
-
-.shortcut-card p {
-  line-height: 1.5;
-  opacity: 0.75;
-}
 </style>

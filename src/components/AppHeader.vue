@@ -8,10 +8,10 @@
     />
 
     <v-app-bar-title>
-      <router-link to="/" class="logo-link">
+      <a href="/" class="logo-link" @click.prevent="$emit('go-home')">
         <v-icon class="mr-2" color="primary">mdi-code-tags</v-icon> &nbsp;
         Darin F Miller
-      </router-link>
+      </a>
     </v-app-bar-title>
 
     <v-btn
@@ -41,6 +41,7 @@ defineProps<{
 }>()
 
 defineEmits<{
+  'go-home': []
   'toggle-mobile-menu': []
   'toggle-theme': []
   logout: []

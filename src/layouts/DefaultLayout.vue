@@ -4,6 +4,7 @@
     <v-layout class="app-shell">
       <AppHeader
         :is-dark="isDark"
+        @go-home="goHome"
         @toggle-mobile-menu="mobileMenuOpen = !mobileMenuOpen"
         @toggle-theme="toggleTheme"
         @logout="handleLogout"
@@ -22,7 +23,7 @@
           :subtitle="pageSubtitle"
         />
 
-        <div class="page-scroll">
+        <div ref="pageScroll" class="page-scroll">
           <router-view />
         </div>
       </v-main>
@@ -31,8 +32,8 @@
 </template>
 
 <script setup lang="ts">
-import { computed, onMounted, ref, watch } from 'vue'
-import { useRoute } from 'vue-router'
+import { computed, nextTick, onMounted, ref, watch } from 'vue'
+import { useRoute, useRouter } from 'vue-router'
 import { useTheme } from 'vuetify'
 
 import AppHeader from '../components/AppHeader.vue'
@@ -40,9 +41,11 @@ import AppNavigation from '../components/AppNavigation.vue'
 import PageHeader from '../components/PageHeader.vue'
 
 const route = useRoute()
+const router = useRouter()
 const theme = useTheme()
 
 const mobileMenuOpen = ref(true)
+const pageScroll = ref<HTMLElement | null>(null)
 const desktopExpanded = ref(
   localStorage.getItem('desktop-navigation-expanded') !== 'false',
 )
@@ -69,6 +72,15 @@ function toggleDesktopNavigation() {
 
 function handleLogout() {
   window.dispatchEvent(new CustomEvent('app:logout-requested'))
+}
+
+async function goHome() {
+  if (route.path !== '/') {
+    await router.push('/')
+  }
+
+  await nextTick()
+  pageScroll.value?.scrollTo({ top: 0 })
 }
 
 onMounted(() => {

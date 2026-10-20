@@ -1,7 +1,7 @@
 
 <template>
   <div class="page-content">
-    <BaseTabs v-model="tab" in-page-header>
+    <BaseTabs v-model="tab" in-page-header hide-tabs>
       <template #tabs>
         <v-tab value="sample">Sample</v-tab>
         <v-tab value="info">Info</v-tab>

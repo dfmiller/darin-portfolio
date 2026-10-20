@@ -4,8 +4,10 @@ import { computed } from 'vue'
 const props = withDefaults(defineProps<{
   modelValue: string
   inPageHeader?: boolean
+  hideTabs?: boolean
 }>(), {
   inPageHeader: false,
+  hideTabs: false,
 })
 const emit = defineEmits<{ 'update:modelValue': [value: string] }>()
 
@@ -16,12 +18,12 @@ const selectedTab = computed({
 </script>
 
 <template>
-  <Teleport v-if="inPageHeader" to="#page-header-tabs">
+  <Teleport v-if="inPageHeader && !hideTabs" to="#page-header-tabs">
     <v-tabs v-model="selectedTab">
       <slot name="tabs" />
     </v-tabs>
   </Teleport>
-  <v-tabs v-else v-model="selectedTab">
+  <v-tabs v-else-if="!hideTabs" v-model="selectedTab">
     <slot name="tabs" />
   </v-tabs>
 

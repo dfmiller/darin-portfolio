@@ -1,11 +1,13 @@
 <script setup>
-import { ref, reactive } from 'vue'
+import { ref, reactive, computed } from 'vue'
+import BaseDialog from '../../components/Base/BaseDialog.vue'
+import BaseSwitch from '../../components/Base/BaseSwitch.vue'
 
 const roles = [{ value: 'admin', label: 'Admin' }, { value: 'editor', label: 'Editor' }, { value: 'viewer', label: 'Viewer' }]
 const contacts = [{ value: 'email', label: 'Email' }, { value: 'phone', label: 'Phone' }, { value: 'none', label: 'Don\'t contact' }]
 const columns = [
   { key: 'n', label: '#' }, { key: 'photo', label: 'Photo' },
-  { key: 'name', label: 'Name' }, { key: 'username', label: 'Username' },
+  { key: 'name', label: 'Name' },
   { key: 'email', label: 'Email' }, { key: 'role', label: 'Role' },
   { key: 'country', label: 'Country' }, { key: 'created', label: 'Created' },
   { key: 'verified', label: 'Verified' }, { key: 'id', label: 'ID' },
@@ -19,8 +21,22 @@ const blank = () => ({
 })
 const rows = ref([])
 
-const panel = ref(false)
+const formDialog = ref(false)
 const form = reactive(blank())
+const isVerified = computed({
+  get: () => Boolean(form.verified),
+  set: (value) => {
+    if (!value) {
+      form.verified = ''
+      return
+    }
+
+    if (!form.verified) {
+      const today = new Date()
+      form.verified = `${today.getFullYear()}-${String(today.getMonth() + 1).padStart(2, '0')}-${String(today.getDate()).padStart(2, '0')}`
+    }
+  },
+})
 const errors = reactive({})
 const saving = ref(false)
 const loading = ref(false)
@@ -33,6 +49,7 @@ const rangeEnd = ref(0)
 const toast = ref(false)
 const toastMessage = ref('')
 const deleting = ref(null)
+const clearConfirmation = ref(false)
 let nextId = 10
 let loaded = false
 
@@ -66,7 +83,7 @@ const normalizeUser = (user, index) => {
 const openForm = (row) => {
   Object.assign(form, row ? { ...row } : blank())
   Object.keys(errors).forEach(k => delete errors[k])
-  panel.value = true
+  formDialog.value = true
 }
 const validate = () => {
   errors.name = form.name.trim() ? '' : 'Enter a name'
@@ -81,7 +98,7 @@ const save = async () => {
   if (form.id) rows.value = rows.value.map(r => (r.id === form.id ? { ...form } : r))
   else rows.value = [...rows.value, { ...form, id: nextId++ }]
   saving.value = false
-  panel.value = false
+  formDialog.value = false
   toastMessage.value = 'User saved'
   toast.value = true
 }
@@ -102,6 +119,10 @@ const clearRows = () => {
   rangeStart.value = 0
   rangeEnd.value = 0
   loaded = false
+}
+const confirmClearRows = () => {
+  clearRows()
+  clearConfirmation.value = false
 }
 const loadRows = async (targetPage = 1) => {
   loading.value = true
@@ -162,7 +183,7 @@ const handlePageSelect = (event) => {
     <div class="d-flex align-center mb-4">
       <p>Search, sort, add, edit and remove users.</p>
       <v-spacer />
-      <BaseButton @click="openForm()">Add user</BaseButton>
+      <BaseButton @click="openForm()">Add User</BaseButton>
     </div>
 
     <BaseTable
@@ -176,58 +197,121 @@ const handlePageSelect = (event) => {
       fixed-header
       hide-default-footer
       @update:page="changePage"
+      @click:row="openForm"
     >
       <template #item.photo="{ item }">
         <BaseAvatar :src="item.photo" :alt="`${item.name}'s profile photo`" :size="32" />
       </template>
       <template #item.actions="{ item }">
-        <BaseIconButton icon="mdi-pencil-outline" label="Edit user" @click="openForm(item)" />
-        <BaseIconButton icon="mdi-delete-outline" label="Remove user" danger @click="deleting = item" />
+        <BaseIconButton icon="mdi-pencil-outline" label="Edit user" @click.stop="openForm(item)" />
+        <BaseIconButton icon="mdi-delete-outline" label="Remove user" danger @click.stop="deleting = item" />
       </template>
-      <template #no-data><p class="pa-6">No users yet. Use Add user to create the first one.</p></template>
+      <template #no-data><p class="pa-6">No users yet. Use Add User to create the first one.</p></template>
     </BaseTable>
 
     <div v-if="loaded" class="sample-footer">
-      <div class="sample-info">Page {{ page }} of {{ pageCount }} · {{ total }} users</div>
+      <div class="sample-info">{{ total }} rows</div>
       <div class="sample-pagination">
-        <span>Items per page: {{ itemsPerPage }}</span>
+        <span>Rows per page: {{ itemsPerPage }}</span>
         <div class="sample-pager" aria-label="Pagination">
-          <button type="button" title="First page" aria-label="First page" :disabled="loading || page === 1" @click="changePage(1)">«</button>
-          <button type="button" title="Previous page" aria-label="Previous page" :disabled="loading || page === 1" @click="previousPage()">‹</button>
+          <v-icon
+            icon="mdi-chevron-double-left"
+            class="page-control"
+            role="button"
+            aria-label="First page"
+            title="First page"
+            :aria-disabled="loading || page === 1"
+            :tabindex="loading || page === 1 ? -1 : 0"
+            @click="!loading && page !== 1 && changePage(1)"
+            @keydown.enter.prevent="!loading && page !== 1 && changePage(1)"
+            @keydown.space.prevent="!loading && page !== 1 && changePage(1)"
+          />
+          <v-icon
+            icon="mdi-chevron-left"
+            class="page-control"
+            role="button"
+            aria-label="Previous page"
+            title="Previous page"
+            :aria-disabled="loading || page === 1"
+            :tabindex="loading || page === 1 ? -1 : 0"
+            @click="!loading && page !== 1 && previousPage()"
+            @keydown.enter.prevent="!loading && page !== 1 && previousPage()"
+            @keydown.space.prevent="!loading && page !== 1 && previousPage()"
+          />
           <select title="Go to page" aria-label="Current page" :value="page" :disabled="loading" @change="handlePageSelect">
             <option v-for="pageNumber in pageCount" :key="pageNumber" :value="pageNumber">{{ pageNumber }}</option>
           </select>
-          <button type="button" title="Next page" aria-label="Next page" :disabled="loading || page >= pageCount" @click="nextPage()">›</button>
-          <button type="button" title="Last page" aria-label="Last page" :disabled="loading || page >= pageCount" @click="changePage(pageCount)">»</button>
+          <span>of {{ pageCount }}</span>
+          <v-icon
+            icon="mdi-chevron-right"
+            class="page-control"
+            role="button"
+            aria-label="Next page"
+            title="Next page"
+            :aria-disabled="loading || page >= pageCount"
+            :tabindex="loading || page >= pageCount ? -1 : 0"
+            @click="!loading && page < pageCount && nextPage()"
+            @keydown.enter.prevent="!loading && page < pageCount && nextPage()"
+            @keydown.space.prevent="!loading && page < pageCount && nextPage()"
+          />
+          <v-icon
+            icon="mdi-chevron-double-right"
+            class="page-control"
+            role="button"
+            aria-label="Last page"
+            title="Last page"
+            :aria-disabled="loading || page >= pageCount"
+            :tabindex="loading || page >= pageCount ? -1 : 0"
+            @click="!loading && page < pageCount && changePage(pageCount)"
+            @keydown.enter.prevent="!loading && page < pageCount && changePage(pageCount)"
+            @keydown.space.prevent="!loading && page < pageCount && changePage(pageCount)"
+          />
         </div>
       </div>
     </div>
+
+    <v-divider class="my-4" />
+
     <div class="sample-actions">
-      <BaseButton variant="quiet" :disabled="loading" @click="clearRows">Clear Table</BaseButton>
+      <BaseButton variant="quiet" :disabled="loading" @click="clearConfirmation = true">Clear Table</BaseButton>
       <BaseButton :loading="loading" @click="loadRows()">Load Test Data</BaseButton>
     </div>
 
-    <BaseSidePanel v-model="panel" :title="form.id ? 'Edit user' : 'Add user'">
-      <BaseTextField v-model="form.name" label="Full name" :error="errors.name" />
-      <BaseTextField v-model="form.email" label="Work email" hint="Used for sign-in" :error="errors.email" />
-      <BaseTextarea v-model="form.bio" label="Bio" />
-      <BaseSelect v-model="form.role" label="Role" :options="roles" :error="errors.role" />
-      <BaseTextField v-model="form.country" label="Country" />
-      <BaseDateField v-model="form.created" label="Created" />
-      <BaseRadioGroup v-model="form.contact" label="Preferred contact" :options="contacts" />
-      <BaseCheckbox v-model="form.notify" label="Send email notifications" />
-      <BaseDateField v-model="form.verified" label="Verified" />
-      <BaseFileInput v-model="form.avatar" label="Profile photo" accept="image/*" class="mt-4" />
-      <BaseTextField :model-value="form.id ?? 'Assigned on save'" label="ID" disabled />
-      <template #footer>
-        <BaseButton variant="quiet" @click="panel = false">Cancel</BaseButton>
-        <BaseButton :loading="saving" @click="save">Save changes</BaseButton>
-      </template>
-    </BaseSidePanel>
+    <BaseDialog
+      v-model="formDialog"
+      :title="form.id ? 'Edit User' : 'Add User'"
+      confirm-label="Save Changes"
+      :confirm-loading="saving"
+      max-width="560"
+      @confirm="save"
+    >
+      <div class="user-form-fields">
+        <BaseTextField v-model="form.name" label="Full name" :error="errors.name" />
+        <BaseTextField v-model="form.email" label="Work email" hint="Used for sign-in" :error="errors.email" />
+        <BaseTextarea v-model="form.bio" label="Bio" />
+        <BaseSelect v-model="form.role" label="Role" :options="roles" :error="errors.role" />
+        <BaseTextField v-model="form.country" label="Country" />
+        <BaseDateField v-model="form.created" label="Created" />
+        <BaseRadioGroup v-model="form.contact" label="Preferred contact" :options="contacts" />
+        <BaseCheckbox v-model="form.notify" label="Send email notifications" />
+        <BaseSwitch v-model="isVerified" label="Verified" />
+        <BaseFileInput v-model="form.avatar" label="Profile photo" accept="image/*" class="mt-4" />
+        <BaseTextField :model-value="form.id ?? 'Assigned on save'" label="ID" disabled />
+      </div>
+    </BaseDialog>
 
     <BaseDialog :model-value="!!deleting" title="Remove this user?" confirm-label="Remove user" danger
       @update:model-value="deleting = null" @confirm="confirmDelete">
       {{ deleting?.name }} loses access immediately.
+    </BaseDialog>
+    <BaseDialog
+      v-model="clearConfirmation"
+      title="Clear the table?"
+      confirm-label="Clear table"
+      danger
+      @confirm="confirmClearRows"
+    >
+      This will remove all loaded users from the table.
     </BaseDialog>
     <BaseToast v-model="toast" :message="toastMessage" />
   </section>
@@ -239,6 +323,11 @@ const handlePageSelect = (event) => {
 
   color: #1f2430;
   font-family: system-ui, sans-serif;
+}
+
+.user-form-fields {
+  max-height: min(65vh, 620px);
+  overflow-y: auto;
 }
 
 .sample-table :deep(.v-table) {
@@ -341,7 +430,6 @@ const handlePageSelect = (event) => {
   gap: 6px;
 }
 
-.sample-pager button,
 .sample-pager select {
   padding: 6px 12px;
   border: 1px solid #cfd3dd;
@@ -357,9 +445,15 @@ const handlePageSelect = (event) => {
   border-color: #2f5bea;
   background: #2f5bea;
   color: #fff;
+  text-align: right;
 }
 
-.sample-pager button:disabled {
+.sample-pager .page-control {
+  color: #1f2430;
+  cursor: pointer;
+}
+
+.sample-pager .page-control[aria-disabled='true'] {
   opacity: 0.45;
   cursor: default;
 }

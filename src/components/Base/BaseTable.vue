@@ -13,10 +13,11 @@ const props = defineProps({
   fixedHeader: Boolean,
   height: [Number, String],
 })
-const emit = defineEmits(['update:page'])
+const emit = defineEmits(['update:page', 'click:row'])
 const q = ref('')
 const headers = computed(() => props.columns.map(c => ({ title: c.label, key: c.key })))
 const tableComponent = computed(() => props.serverItemsLength === undefined ? 'v-data-table' : 'v-data-table-server')
+const handleRowClick = (_event, { item }) => emit('click:row', item)
 const tableProps = computed(() => ({
   headers: headers.value,
   items: props.rows,
@@ -38,8 +39,13 @@ const tableProps = computed(() => ({
 
 <template>
   <div>
-    <v-text-field v-if="searchable" v-model="q" placeholder="Filter rows" prepend-inner-icon="mdi-magnify" hide-details class="mb-3" style="max-width:320px" />
-    <component :is="tableComponent" v-bind="tableProps" @update:page="emit('update:page', $event)">
+    <v-text-field v-if="searchable" v-model="q" placeholder="Filter rows" prepend-inner-icon="mdi-magnify" variant="underlined" hide-details class="mb-3" style="max-width:320px" />
+    <component
+      :is="tableComponent"
+      v-bind="tableProps"
+      @update:page="emit('update:page', $event)"
+      @click:row="handleRowClick"
+    >
       <template v-for="(_, name) in $slots" #[name]="slotProps"><slot :name="name" v-bind="slotProps || {}" /></template>
     </component>
   </div>

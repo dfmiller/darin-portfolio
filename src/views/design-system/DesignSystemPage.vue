@@ -6,9 +6,10 @@
         <v-tab value="sample">Sample</v-tab>
         <v-tab value="info">Info</v-tab>
       </template>
+      
       <v-tabs-window-item value="sample">
         <SampleTab />
-        <CommentsTable />
+        <!-- <CommentsTable /> -->
       </v-tabs-window-item>
 
       <v-tabs-window-item value="info">

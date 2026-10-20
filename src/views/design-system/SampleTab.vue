@@ -174,7 +174,6 @@ const handlePageSelect = (event) => {
       :server-items-length="total"
       :loading="loading"
       fixed-header
-      height="70vh"
       hide-default-footer
       @update:page="changePage"
     >
@@ -204,8 +203,8 @@ const handlePageSelect = (event) => {
       </div>
     </div>
     <div class="sample-actions">
-      <BaseButton variant="quiet" :disabled="loading" @click="clearRows">Clear table</BaseButton>
-      <BaseButton :loading="loading" @click="loadRows()">Load data</BaseButton>
+      <BaseButton variant="quiet" :disabled="loading" @click="clearRows">Clear Table</BaseButton>
+      <BaseButton :loading="loading" @click="loadRows()">Load Test Data</BaseButton>
     </div>
 
     <BaseSidePanel v-model="panel" :title="form.id ? 'Edit user' : 'Add user'">

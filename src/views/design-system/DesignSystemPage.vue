@@ -21,7 +21,7 @@
 
 <script setup lang="ts">
 import { ref } from 'vue'
-import CommentsTable from './CommentsTable.vue'
+//import CommentsTable from './CommentsTable.vue'
 import InfoTab from './InfoTab.vue'
 import SampleTab from './SampleTab.vue'
 

@@ -4,18 +4,22 @@
     class="page-header"
     :class="{ 'page-header--section-nav': links?.length }"
   >
-    <h1 v-if="title">{{ title }}</h1>
-    <v-spacer v-else />
-    <small v-if="subtitle">{{ subtitle }}</small>
-    <nav v-if="links?.length" aria-label="Page sections">
-      <a
-        v-for="link in links"
-        :key="link.href"
-        :href="link.href"
-      >
-        {{ link.label }}
-      </a>
-    </nav>
+    <div class="page-header-content">
+      <div class="page-header-title">
+        <h1 v-if="title">{{ title }}</h1>
+        <small v-if="subtitle">{{ subtitle }}</small>
+      </div>
+      <div id="page-header-tabs" />
+      <nav v-if="links?.length" aria-label="Page sections">
+        <a
+          v-for="link in links"
+          :key="link.href"
+          :href="link.href"
+        >
+          {{ link.label }}
+        </a>
+      </nav>
+    </div>
   </div>
 </template>
 
@@ -35,6 +39,17 @@ defineProps<{
   padding: 20px 24px;
   background: rgb(var(--v-theme-background));
   border-bottom: 1px solid rgba(var(--v-border-color), var(--v-border-opacity));
+}
+
+.page-header-content {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 24px;
+}
+
+.page-header-title {
+  min-width: 0;
 }
 
 .page-header--section-nav {
@@ -77,6 +92,12 @@ a:hover {
 
   nav {
     gap: 16px;
+  }
+
+  .page-header-content {
+    align-items: flex-start;
+    flex-direction: column;
+    gap: 8px;
   }
 }
 </style>

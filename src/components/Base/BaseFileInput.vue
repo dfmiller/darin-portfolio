@@ -1,0 +1,9 @@
+<script setup>
+defineProps({ modelValue: [File, Array], label: String, accept: String, hint: String, error: String })
+defineEmits(['update:modelValue'])
+</script>
+<template>
+  <v-file-input :model-value="modelValue" :label="label" :accept="accept" variant="outlined" density="comfortable"
+    :hint="hint" :persistent-hint="!!hint" :error-messages="error" prepend-icon="" prepend-inner-icon="mdi-paperclip"
+    @update:model-value="$emit('update:modelValue', $event)" />
+</template>

@@ -1,0 +1,31 @@
+<script setup lang="ts">
+import { computed } from 'vue'
+
+const props = withDefaults(defineProps<{
+  modelValue: string
+  inPageHeader?: boolean
+}>(), {
+  inPageHeader: false,
+})
+const emit = defineEmits<{ 'update:modelValue': [value: string] }>()
+
+const selectedTab = computed({
+  get: () => props.modelValue,
+  set: value => emit('update:modelValue', value),
+})
+</script>
+
+<template>
+  <Teleport v-if="inPageHeader" to="#page-header-tabs">
+    <v-tabs v-model="selectedTab">
+      <slot name="tabs" />
+    </v-tabs>
+  </Teleport>
+  <v-tabs v-else v-model="selectedTab">
+    <slot name="tabs" />
+  </v-tabs>
+
+  <v-tabs-window v-model="selectedTab">
+    <slot />
+  </v-tabs-window>
+</template>

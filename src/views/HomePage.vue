@@ -97,8 +97,232 @@ const pageSections = [
 
 <style scoped>
 .home-page {
+  --max: 1100px;
+
   max-width: 1440px;
   margin: 0 auto;
   padding: 24px;
+}
+
+.home-page :deep(.eyebrow),
+.home-page :deep(.case-label) {
+  color: var(--accent);
+  font-size: 0.8rem;
+  font-weight: 700;
+  letter-spacing: 0.13em;
+  text-transform: uppercase;
+}
+
+.home-page :deep(.hero h1) {
+  max-width: 850px;
+  margin: 18px 0 16px;
+  font-size: clamp(2rem, 4vw, 3.25rem);
+  font-weight: 700;
+  line-height: 1.15;
+  letter-spacing: -0.065em;
+}
+
+.home-page :deep(.actions) {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px;
+  margin-top: 34px;
+}
+
+.home-page :deep(section) {
+  border-top: 1px solid var(--line);
+}
+
+.home-page :deep(section:not(.hero)) {
+  padding: 86px 0;
+}
+
+.home-page :deep(.section-heading) {
+  margin-bottom: 36px;
+}
+
+.home-page :deep(.section-heading h2) {
+  margin: 0 0 14px;
+  font-size: 2.3rem;
+  line-height: 1.1;
+  letter-spacing: -0.04em;
+}
+
+.home-page :deep(.section-heading p) {
+  max-width: 720px;
+  margin: 0;
+  color: rgba(var(--v-theme-on-background), var(--v-medium-emphasis-opacity));
+}
+
+.home-page :deep(.case-study-list) {
+  display: flex;
+  flex-direction: column;
+  gap: 32px;
+}
+
+.home-page :deep(.case-study) {
+  padding: 30px;
+  background: var(--panel);
+  color: white;
+  border-radius: 20px;
+}
+
+.home-page :deep(.case-study-intro h3) {
+  margin: 8px 0;
+  font-size: 1.8rem;
+}
+
+.home-page :deep(.case-study-intro p),
+.home-page :deep(.case-copy p) {
+  max-width: 820px;
+  color: var(--muted);
+}
+
+.home-page :deep(.case-study-details) {
+  display: grid;
+  grid-template-columns: 0.8fr 1.2fr;
+  gap: 46px;
+  margin-top: 42px;
+}
+
+.home-page :deep(.case-study-details h4) {
+  margin: 8px 0 0;
+  font-size: 1.5rem;
+  line-height: 1.2;
+}
+
+.home-page :deep(.case-copy p:first-child) {
+  margin-top: 0;
+}
+
+.home-page :deep(.tech-row) {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 9px;
+  margin-top: 32px;
+}
+
+.home-page :deep(.card-grid) {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 18px;
+  color: white;
+}
+
+.home-page :deep(.card) {
+  padding: 28px;
+  background: var(--panel);
+  border: 1px solid var(--line);
+  border-radius: 20px;
+}
+
+.home-page :deep(.card h3) {
+  margin: 0 0 8px;
+  font-size: 1.35rem;
+}
+
+.home-page :deep(.card p) {
+  margin: 0;
+  color: var(--muted);
+}
+
+.home-page :deep(.project-grid) {
+  grid-template-columns: 1fr;
+}
+
+.home-page :deep(.project-card) {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 24px;
+}
+
+.home-page :deep(.project-cta) {
+  display: inline-flex;
+  flex: 0 0 auto;
+  align-items: center;
+  gap: 8px;
+  padding: 12px 18px;
+  border: 1px solid var(--accent);
+  border-radius: 999px;
+  background: var(--accent);
+  color: var(--bg);
+  font-weight: 700;
+  line-height: 1.2;
+  text-decoration: none;
+  transition: background-color 150ms ease, color 150ms ease;
+}
+
+.home-page :deep(.project-cta:hover) {
+  background: transparent;
+  color: var(--accent);
+}
+
+.home-page :deep(.project-cta:focus-visible) {
+  outline: 2px solid var(--text);
+  outline-offset: 3px;
+}
+
+.home-page :deep(.tag) {
+  display: inline-block;
+  margin-bottom: 14px;
+  color: var(--accent);
+  font-size: 0.82rem;
+}
+
+.home-page :deep(.skills) {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+}
+
+.home-page :deep(.timeline) {
+  display: grid;
+}
+
+.home-page :deep(.role) {
+  display: grid;
+  grid-template-columns: 230px 1fr;
+  gap: 30px;
+  padding: 24px 0;
+  border-top: 1px solid var(--line);
+}
+
+.home-page :deep(.role:first-child) {
+  border-top: 0;
+}
+
+.home-page :deep(.role strong),
+.home-page :deep(.role span) {
+  display: block;
+}
+
+.home-page :deep(.role span) {
+  color: rgba(var(--v-theme-on-background), var(--v-medium-emphasis-opacity));
+}
+
+@media (max-width: 760px) {
+  .home-page :deep(.wrap) {
+    width: min(var(--max), calc(100% - 32px));
+  }
+
+  .home-page :deep(section:not(.hero)) {
+    padding: 94px 0 60px;
+  }
+
+  .home-page :deep(.card-grid),
+  .home-page :deep(.case-study-details),
+  .home-page :deep(.role) {
+    grid-template-columns: 1fr;
+  }
+
+  .home-page :deep(.project-card) {
+    align-items: flex-start;
+    flex-direction: column;
+  }
+
+  .home-page :deep(.role) {
+    gap: 8px;
+  }
 }
 </style>

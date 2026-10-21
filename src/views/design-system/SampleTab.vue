@@ -166,16 +166,6 @@ const loadRows = async (targetPage = 1) => {
 const changePage = (targetPage) => {
   if (loaded && targetPage !== page.value) void loadRows(targetPage)
 }
-const previousPage = () => {
-  if (page.value > 1) void loadRows(page.value - 1)
-}
-const nextPage = () => {
-  if (page.value < pageCount.value) void loadRows(page.value + 1)
-}
-const handlePageSelect = (event) => {
-  const selectedPage = Number(event.currentTarget.value)
-  if (Number.isInteger(selectedPage)) changePage(selectedPage)
-}
 </script>
 
 <template>
@@ -209,66 +199,15 @@ const handlePageSelect = (event) => {
       <template #no-data><p class="pa-6">No users yet. Use Add User to create the first one.</p></template>
     </BaseTable>
 
-    <div v-if="loaded" class="sample-footer">
-      <div class="sample-info">{{ total }} rows</div>
-      <div class="sample-pagination">
-        <span>Rows per page: {{ itemsPerPage }}</span>
-        <div class="sample-pager" aria-label="Pagination">
-          <v-icon
-            icon="mdi-chevron-double-left"
-            class="page-control"
-            role="button"
-            aria-label="First page"
-            title="First page"
-            :aria-disabled="loading || page === 1"
-            :tabindex="loading || page === 1 ? -1 : 0"
-            @click="!loading && page !== 1 && changePage(1)"
-            @keydown.enter.prevent="!loading && page !== 1 && changePage(1)"
-            @keydown.space.prevent="!loading && page !== 1 && changePage(1)"
-          />
-          <v-icon
-            icon="mdi-chevron-left"
-            class="page-control"
-            role="button"
-            aria-label="Previous page"
-            title="Previous page"
-            :aria-disabled="loading || page === 1"
-            :tabindex="loading || page === 1 ? -1 : 0"
-            @click="!loading && page !== 1 && previousPage()"
-            @keydown.enter.prevent="!loading && page !== 1 && previousPage()"
-            @keydown.space.prevent="!loading && page !== 1 && previousPage()"
-          />
-          <select title="Go to page" aria-label="Current page" :value="page" :disabled="loading" @change="handlePageSelect">
-            <option v-for="pageNumber in pageCount" :key="pageNumber" :value="pageNumber">{{ pageNumber }}</option>
-          </select>
-          <span>of {{ pageCount }}</span>
-          <v-icon
-            icon="mdi-chevron-right"
-            class="page-control"
-            role="button"
-            aria-label="Next page"
-            title="Next page"
-            :aria-disabled="loading || page >= pageCount"
-            :tabindex="loading || page >= pageCount ? -1 : 0"
-            @click="!loading && page < pageCount && nextPage()"
-            @keydown.enter.prevent="!loading && page < pageCount && nextPage()"
-            @keydown.space.prevent="!loading && page < pageCount && nextPage()"
-          />
-          <v-icon
-            icon="mdi-chevron-double-right"
-            class="page-control"
-            role="button"
-            aria-label="Last page"
-            title="Last page"
-            :aria-disabled="loading || page >= pageCount"
-            :tabindex="loading || page >= pageCount ? -1 : 0"
-            @click="!loading && page < pageCount && changePage(pageCount)"
-            @keydown.enter.prevent="!loading && page < pageCount && changePage(pageCount)"
-            @keydown.space.prevent="!loading && page < pageCount && changePage(pageCount)"
-          />
-        </div>
-      </div>
-    </div>
+    <BasePagination
+      v-if="loaded"
+      :model-value="page"
+      :page-count="pageCount"
+      :total="total"
+      :items-per-page="itemsPerPage"
+      :loading="loading"
+      @update:model-value="changePage"
+    />
 
     <v-divider class="my-4" />
 
@@ -401,61 +340,6 @@ const handlePageSelect = (event) => {
   border: 3px solid #e6e8ee;
   border-radius: 7px;
   background: #8a92a6;
-}
-
-.sample-footer {
-  display: flex;
-  flex-wrap: wrap;
-  align-items: center;
-  justify-content: space-between;
-  gap: 12px;
-  margin-top: 14px;
-  color: #5b6272;
-  font-size: 0.9rem;
-}
-
-.sample-info {
-  margin-right: auto;
-}
-
-.sample-pagination {
-  display: flex;
-  align-items: center;
-  gap: 12px;
-}
-
-.sample-pager {
-  display: flex;
-  align-items: center;
-  gap: 6px;
-}
-
-.sample-pager select {
-  padding: 6px 12px;
-  border: 1px solid #cfd3dd;
-  border-radius: 6px;
-  background: #fff;
-  color: #1f2430;
-  font-size: 0.9rem;
-  cursor: pointer;
-}
-
-.sample-pager select {
-  padding: 6px 8px;
-  border-color: #2f5bea;
-  background: #2f5bea;
-  color: #fff;
-  text-align: right;
-}
-
-.sample-pager .page-control {
-  color: #1f2430;
-  cursor: pointer;
-}
-
-.sample-pager .page-control[aria-disabled='true'] {
-  opacity: 0.45;
-  cursor: default;
 }
 
 .sample-actions {

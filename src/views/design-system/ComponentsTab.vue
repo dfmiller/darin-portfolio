@@ -5,8 +5,6 @@ const textValue = ref('')
 const emailValue = ref('')
 const numberValue = ref(5)
 const textareaValue = ref('')
-const autocompleteValue = ref('')
-const selectValue = ref('')
 const comboboxValue = ref('')
 const combinedAutocompleteValue = ref('')
 const combinedSelectValue = ref('')
@@ -16,6 +14,7 @@ const checkboxValue = ref(false)
 const switchValue = ref(true)
 const radioValue = ref('email')
 const activeTab = ref('overview')
+const demoPage = ref(2)
 const dialogOpen = ref(false)
 const toastOpen = ref(false)
 const formDialogOpen = ref(false)
@@ -67,15 +66,16 @@ const confirmDialog = () => {
         <a href="#dialog">Dialog</a>
         <a href="#file-input">File input</a>
         <a href="#icon-buttons">Icon buttons</a>
+        <a href="#pagination">Pagination</a>
         <a href="#radio-group">Radio group</a>
         <a href="#switch">Switch</a>
         <a href="#table">Table</a>
         <a href="#tabs">Tabs</a>
         <a href="#text-fields">Text fields</a>
-        <a href="#textarea">Textarea</a>       
+        <a href="#textarea">Textarea</a>
         <a href="#toast">Toast</a>
     </div>
-    
+
     <section id="avatars" class="component-section">
       <h2>Avatars</h2>
       <div class="examples">
@@ -215,13 +215,18 @@ const confirmDialog = () => {
       <BaseTextarea v-model="textareaValue" label="Description" hint="A short summary" />
     </section>
 
+    <section id="pagination" class="component-section">
+      <h2>Pagination</h2>
+      <BasePagination v-model="demoPage" :page-count="5" :total="48" :items-per-page="10" />
+    </section>
+
     <section class="component-section">
       <h2>Toast</h2>
       <BaseButton @click="openToast">Show toast</BaseButton>
       <BaseToast v-model="toastOpen" message="Your changes have been saved." />
     </section>
 
-  </div>  
+  </div>
 </template>
 
 <style scoped>

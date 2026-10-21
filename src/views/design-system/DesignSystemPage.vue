@@ -4,7 +4,7 @@
     <BaseTabs v-model="tab" in-page-header>
       <template #tabs>
         <v-tab value="components">Components</v-tab>
-        <v-tab value="sample">Samples</v-tab>
+        <v-tab value="sample">Sample Use</v-tab>
         <v-tab value="info">Info</v-tab>
       </template>
 
@@ -14,7 +14,6 @@
       
       <v-tabs-window-item value="sample">
         <SampleTab />
-        <CommentsTable />
       </v-tabs-window-item>
 
       <v-tabs-window-item value="info">
@@ -28,10 +27,9 @@
 import { ref } from 'vue'
 import ComponentsTab from './ComponentsTab.vue'
 import SampleTab from './SampleTab.vue'
-import CommentsTable from './CommentsTable.vue'
 import InfoTab from './InfoTab.vue'
 
-const tab = ref('sample')
+const tab = ref('components')
 </script>
 
 <style scoped>

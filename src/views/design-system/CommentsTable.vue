@@ -6,17 +6,12 @@
       <a href="https://jsonfakery.com/users/paginated">jsonfakery.com/users/paginated</a>
     </p>
 
+    <div class="table-toolbar">
+      <BaseButton :disabled="busy" @click="openForm()">Add User</BaseButton>
+    </div>
+
     <div class="tablebox">
-      <div
-        ref="wrap"
-        class="wrap"
-        :class="{ locked: scrollLocked }"
-        @scroll="handleScroll"
-        @wheel="handleWheel"
-        @touchstart.passive="handleTouchStart"
-        @touchend.passive="handleTouchEnd"
-        @touchcancel.passive="handleTouchCancel"
-      >
+      <div class="wrap">
         <table>
           <thead>
             <tr>
@@ -24,18 +19,23 @@
             </tr>
           </thead>
           <tbody>
-            <tr v-for="(row, index) in currentRows" :key="row.id">
+            <tr v-if="!busy && currentRows.length === 0">
+              <td :colspan="columns.length" class="empty-state">
+                No users yet. Use Add User to create the first one.
+              </td>
+            </tr>
+            <tr
+              v-for="(row, index) in currentRows"
+              :key="row.id"
+              class="user-row"
+              tabindex="0"
+              @click="openForm(row)"
+              @keydown.enter.prevent="openForm(row)"
+            >
               <td
                 v-for="column in columns"
                 :key="column.key"
-                :class="[
-                  column.className,
-                  {
-                    editable: column.edit,
-                    edited: column.edit && isEdited(row.id, column.key),
-                  },
-                ]"
-                @click="column.edit && openEditor(row, column)"
+                :class="column.className"
               >
                 <template v-if="column.key === 'n'">
                   {{ currentStart + index + 1 }}
@@ -76,114 +76,66 @@
     </div>
 
     <div class="footer">
-      <div class="info" aria-live="polite">
-        {{ statusText }}
-      </div>
-      <div class="pager" aria-label="Pagination">
-        <button
-          type="button"
-          title="First page"
-          aria-label="First page"
-          :disabled="busy || page === 1"
-          @click="goTo(1)"
-        >
-          «
-        </button>
-        <button
-          type="button"
-          title="Previous page"
-          aria-label="Previous page"
-          :disabled="busy || page === 1"
-          @click="goTo(page - 1)"
-        >
-          ‹
-        </button>
-        <select
-          title="Go to page"
-          aria-label="Current page"
-          :value="page"
-          :disabled="busy"
-          @change="handlePageSelect"
-        >
-          <option v-for="pageNumber in pageNumbers" :key="pageNumber" :value="pageNumber">
-            {{ pageNumber }}
-          </option>
-        </select>
-        <button
-          type="button"
-          title="Next page"
-          aria-label="Next page"
-          :disabled="busy || page === pageCount"
-          @click="goTo(page + 1)"
-        >
-          ›
-        </button>
-        <button
-          type="button"
-          title="Last page"
-          aria-label="Last page"
-          :disabled="busy || page === pageCount"
-          @click="goTo(pageCount)"
-        >
-          »
-        </button>
-      </div>
+      <div v-if="statusText" class="info" aria-live="polite">{{ statusText }}</div>
+      <BasePagination
+        v-if="currentRows.length > 0"
+        :model-value="page"
+        :page-count="pageCount"
+        :total="total ?? currentRows.length"
+        :items-per-page="itemsPerPage"
+        :loading="busy"
+        @update:model-value="goTo"
+      />
     </div>
 
-    <dialog ref="editorDialog" class="editor" @close="closeEditor" @click.self="closeDialog">
-      <form novalidate @submit.prevent="saveEdit">
-        <h2>{{ editing ? `Edit ${editing.row.name || 'user'}` : '' }}</h2>
-        <label v-if="editing" for="editor-input">{{ editing.column.label }}</label>
-        <div v-if="editing">
-          <textarea
-            v-if="editing.column.edit?.type === 'textarea'"
-            id="editor-input"
-            ref="editorInput"
-            v-model="editorValue"
-            :required="!editing.column.edit.optional"
-          />
-          <input
-            v-else
-            id="editor-input"
-            ref="editorInput"
-            v-model="editorValue"
-            :type="editing.column.edit?.type ?? 'text'"
-            :required="!editing.column.edit?.optional"
-          />
-        </div>
-        <p class="err" role="alert">{{ editError }}</p>
-        <div class="actions">
-          <button type="button" @click="closeDialog">Cancel</button>
-          <button type="submit" class="primary">Save</button>
-        </div>
-      </form>
-    </dialog>
+    <div class="table-actions">
+      <BaseButton variant="quiet" :disabled="busy" @click="clearTable">Clear Table</BaseButton>
+      <BaseButton :loading="busy" :disabled="busy" @click="loadTestData">Load Test Data</BaseButton>
+    </div>
+
+    <BaseDialog
+      v-model="formDialog"
+      :title="form.id ? 'Edit User' : 'Add User'"
+      confirm-label="Save Changes"
+      max-width="560"
+      @confirm="saveUser"
+    >
+      <div class="user-form-fields">
+        <p class="form-note">New and edited users are local to this table; the source API is read-only.</p>
+        <BaseTextField v-model="form.name" label="Full name" :error="errors.name" />
+        <BaseTextField v-model="form.email" label="Work email" :error="errors.email" />
+        <BaseTextField v-model="form.role" label="Role" :error="errors.role" />
+        <BaseTextField v-model="form.country" label="Country" />
+        <BaseDateField v-model="form.created" label="Created" />
+        <BaseDateField v-model="form.verified" label="Verified" />
+        <BaseTextField :model-value="form.id ?? 'Assigned on save'" label="ID" disabled />
+      </div>
+    </BaseDialog>
   </div>
 </template>
 
 <script setup lang="ts">
-import { computed, nextTick, onBeforeUnmount, onMounted, ref } from 'vue'
+import { computed, onBeforeUnmount, onMounted, reactive, ref } from 'vue'
+import BaseDialog from '../../components/Base/BaseDialog.vue'
 
 const API = 'https://jsonfakery.com/users/paginated'
-const LOCK_MS = 1000
-const SWIPE_DISTANCE = 60
-
-type EditableField =
-  | 'name'
-  | 'username'
-  | 'email'
-  | 'role'
-  | 'country'
-  | 'created'
-  | 'verified'
-type ColumnKey = EditableField | 'n' | 'photo' | 'id'
-type EditType = 'text' | 'email' | 'date' | 'textarea'
+type ColumnKey = 'n' | 'photo' | 'name' | 'email' | 'role' | 'country' | 'created' | 'verified' | 'id'
 
 interface UserRow {
   id: string
   photo: string
   name: string
-  username: string
+  email: string
+  role: string
+  country: string
+  created: string
+  verified: string
+}
+
+interface UserForm {
+  id: string | null
+  photo: string
+  name: string
   email: string
   role: string
   country: string
@@ -195,10 +147,6 @@ interface Column {
   key: ColumnKey
   label: string
   className: string
-  edit?: {
-    type: EditType
-    optional?: boolean
-  }
 }
 
 interface CachedPage {
@@ -217,19 +165,17 @@ interface ApiPage {
 const columns = [
   { key: 'n', label: '#', className: 'nw' },
   { key: 'photo', label: 'Photo', className: 'nw' },
-  { key: 'name', label: 'Name', className: 'name', edit: { type: 'text' } },
-  { key: 'username', label: 'Username', className: 'nw', edit: { type: 'text' } },
-  { key: 'email', label: 'Email', className: 'nw', edit: { type: 'email' } },
-  { key: 'role', label: 'Role', className: 'nw', edit: { type: 'text' } },
-  { key: 'country', label: 'Country', className: 'nw', edit: { type: 'text', optional: true } },
-  { key: 'created', label: 'Created', className: 'nw', edit: { type: 'date' } },
-  { key: 'verified', label: 'Verified', className: 'nw', edit: { type: 'date', optional: true } },
+  { key: 'name', label: 'Name', className: 'name' },
+  { key: 'email', label: 'Email', className: 'nw' },
+  { key: 'role', label: 'Role', className: 'nw' },
+  { key: 'country', label: 'Country', className: 'nw' },
+  { key: 'created', label: 'Created', className: 'nw' },
+  { key: 'verified', label: 'Verified', className: 'nw' },
   { key: 'id', label: 'ID', className: 'nw mono' },
 ] satisfies readonly Column[]
 
-const dateKeys = new Set<EditableField>(['created', 'verified'])
+const dateKeys = new Set<ColumnKey>(['created', 'verified'])
 const cache = ref<Record<number, CachedPage>>({})
-const edits = ref<Record<string, Partial<Record<EditableField, string>>>>({})
 const total = ref<number | null>(null)
 const pageCount = ref(1)
 const page = ref(1)
@@ -237,41 +183,34 @@ const busy = ref(false)
 const pendingPage = ref<number | null>(null)
 const loadError = ref('')
 const full = ref(false)
-const wrap = ref<HTMLDivElement | null>(null)
-const editorDialog = ref<HTMLDialogElement | null>(null)
-const editorInput = ref<HTMLInputElement | HTMLTextAreaElement | null>(null)
-const editorValue = ref('')
-const editError = ref('')
-const scrollLocked = ref(false)
+const formDialog = ref(false)
+const form = reactive<UserForm>(blankUser())
+const errors = reactive({ name: '', email: '', role: '' })
 
 const currentPage = computed(() => cache.value[page.value])
 const currentRows = computed(() => currentPage.value?.rows ?? [])
 const currentStart = computed(() => (currentPage.value?.from ?? 1) - 1)
-const pageNumbers = computed(() => Array.from({ length: pageCount.value }, (_, index) => index + 1))
 const statusText = computed(() => {
   if (busy.value) return `Loading page ${pendingPage.value}…`
-  const status = total.value === null
-    ? ''
-    : `Page ${page.value} of ${pageCount.value} · ${total.value} users`
-  return `${status}${loadError.value ? ` — ${loadError.value}` : ''}`
+  return loadError.value
 })
+const itemsPerPage = ref(10)
 
-let lockedUntil = 0
-let lockTimer: number | undefined
-let lockPosition: number | null = null
-let shownPage: number | null = null
-let touchStartY: number | null = null
-let touchStartX = 0
-let startAtTop = false
-let startAtBottom = false
-let destroyed = false
+let localId = 0
 
-interface EditingCell {
-  row: UserRow
-  column: Column & { key: EditableField; edit: NonNullable<Column['edit']> }
+function blankUser(): UserForm {
+  const today = new Date()
+  return {
+    id: null,
+    photo: '',
+    name: '',
+    email: '',
+    role: '',
+    country: '',
+    created: `${today.getFullYear()}-${String(today.getMonth() + 1).padStart(2, '0')}-${String(today.getDate()).padStart(2, '0')}`,
+    verified: '',
+  }
 }
-
-const editing = ref<EditingCell | null>(null)
 
 function stringValue(value: unknown): string {
   return value == null ? '' : String(value)
@@ -312,7 +251,7 @@ function formatDate(iso: string): string {
 
 function display(row: UserRow, key: ColumnKey): string {
   if (key === 'n' || key === 'photo') return ''
-  return dateKeys.has(key as EditableField)
+  return dateKeys.has(key)
     ? formatDate(row[key])
     : row[key]
 }
@@ -328,7 +267,6 @@ function normalizeUser(user: Record<string, unknown>): UserRow {
     id: stringValue(user.id),
     photo: stringValue(user.profile_pic),
     name,
-    username: stringValue(user.username),
     email: stringValue(user.email),
     role: stringValue(user.role),
     country: stringValue(address.country),
@@ -337,161 +275,66 @@ function normalizeUser(user: Record<string, unknown>): UserRow {
   }
 }
 
-function isEdited(id: string, key: ColumnKey): boolean {
-  return key in (edits.value[id] ?? {})
+function openForm(row?: UserRow): void {
+  Object.assign(form, row ? { ...row } : blankUser())
+  errors.name = ''
+  errors.email = ''
+  errors.role = ''
+  formDialog.value = true
 }
 
-function isLocked(): boolean {
-  return Date.now() < lockedUntil
-}
+function saveUser(): void {
+  errors.name = form.name.trim() ? '' : 'Enter a name'
+  errors.email = /\S+@\S+\.\S+/.test(form.email) ? '' : 'Enter a valid email address'
+  errors.role = form.role.trim() ? '' : 'Enter a role'
+  if (errors.name || errors.email || errors.role) return
 
-function lockScroll(): void {
-  const element = wrap.value
-  if (!element) return
-
-  lockedUntil = Date.now() + LOCK_MS
-  lockPosition = null
-  scrollLocked.value = true
-  if (lockTimer !== undefined) window.clearTimeout(lockTimer)
-  lockTimer = window.setTimeout(() => {
-    scrollLocked.value = false
-    lockPosition = null
-    lockTimer = undefined
-  }, LOCK_MS)
-}
-
-function jumpTo(position: number): void {
-  const element = wrap.value
-  if (!element) return
-  element.scrollTop = position
-  lockPosition = element.scrollTop
-}
-
-function handleScroll(): void {
-  const element = wrap.value
-  if (isLocked() && lockPosition !== null && element && element.scrollTop !== lockPosition) {
-    element.scrollTop = lockPosition
-  }
-}
-
-function edges(): { top: boolean; bottom: boolean } {
-  const element = wrap.value
-  return {
-    top: !element || element.scrollTop <= 0,
-    bottom: !element || element.scrollTop + element.clientHeight >= element.scrollHeight - 1,
-  }
-}
-
-function handleWheel(event: WheelEvent): void {
-  const element = wrap.value
-  if (!element) return
-  if (isLocked()) {
-    event.preventDefault()
-    return
-  }
-  if (Math.abs(event.deltaY) <= Math.abs(event.deltaX)) return
-
-  const atEdge = edges()
-  if (event.deltaY > 0 && atEdge.bottom && page.value < pageCount.value) {
-    event.preventDefault()
-    void goTo(page.value + 1, 'top')
-  } else if (event.deltaY < 0 && atEdge.top && page.value > 1) {
-    event.preventDefault()
-    void goTo(page.value - 1, 'bottom')
-  }
-}
-
-function handleTouchStart(event: TouchEvent): void {
-  if (event.touches.length !== 1) {
-    touchStartY = null
-    return
-  }
-  touchStartY = event.touches[0].clientY
-  touchStartX = event.touches[0].clientX
-  const atEdge = edges()
-  startAtTop = atEdge.top
-  startAtBottom = atEdge.bottom
-}
-
-function handleTouchEnd(event: TouchEvent): void {
-  if (touchStartY === null || event.changedTouches.length === 0) return
-  const touch = event.changedTouches[0]
-  const deltaY = touch.clientY - touchStartY
-  const deltaX = touch.clientX - touchStartX
-  touchStartY = null
-  if (Math.abs(deltaY) < SWIPE_DISTANCE || Math.abs(deltaX) > Math.abs(deltaY)) return
-
-  const atEdge = edges()
-  if (isLocked()) return
-  if (deltaY < 0 && startAtBottom && atEdge.bottom && page.value < pageCount.value) {
-    void goTo(page.value + 1, 'top')
-  } else if (deltaY > 0 && startAtTop && atEdge.top && page.value > 1) {
-    void goTo(page.value - 1, 'bottom')
-  }
-}
-
-function handleTouchCancel(): void {
-  touchStartY = null
-}
-
-function handlePageSelect(event: Event): void {
-  const select = event.currentTarget
-  if (select instanceof HTMLSelectElement) void goTo(Number(select.value))
-}
-
-function openEditor(row: UserRow, column: Column): void {
-  if (!column.edit || !isEditableField(column.key) || !editorDialog.value) return
-  editing.value = {
-    row,
-    column: column as EditingCell['column'],
-  }
-  editorValue.value = row[column.key]
-  editError.value = ''
-  editorDialog.value.showModal()
-  void nextTick(() => {
-    editorInput.value?.focus()
-    if (column.edit?.type !== 'date' && column.edit?.type !== 'textarea') {
-      editorInput.value?.select()
-    }
-  })
-}
-
-function isEditableField(key: ColumnKey): key is EditableField {
-  return key !== 'n' && key !== 'photo' && key !== 'id'
-}
-
-function saveEdit(): void {
-  const current = editing.value
-  const input = editorInput.value
-  if (!current || !input) return
-  if (!input.checkValidity()) {
-    editError.value = input.validationMessage
-    input.reportValidity()
-    return
+  const id = form.id ?? `local-${Date.now()}-${++localId}`
+  const savedRow: UserRow = { ...form, id }
+  const rows = [...currentRows.value]
+  const existingIndex = rows.findIndex((row) => row.id === id)
+  if (existingIndex >= 0) {
+    rows[existingIndex] = savedRow
+  } else {
+    rows.push(savedRow)
+    total.value = (total.value ?? rows.length - 1) + 1
+    pageCount.value = Math.max(1, Math.ceil(total.value / itemsPerPage.value))
   }
 
-  if (editorValue.value !== current.row[current.column.key]) {
-    current.row[current.column.key] = editorValue.value
-    edits.value[current.row.id] = {
-      ...edits.value[current.row.id],
-      [current.column.key]: editorValue.value,
-    }
+  cache.value = {
+    ...cache.value,
+    [page.value]: {
+      rows,
+      from: currentPage.value?.from ?? (page.value - 1) * itemsPerPage.value + 1,
+    },
   }
-  editorDialog.value?.close()
-}
-
-function closeDialog(): void {
-  editorDialog.value?.close()
-}
-
-function closeEditor(): void {
-  editing.value = null
+  formDialog.value = false
 }
 
 function handleKeydown(event: KeyboardEvent): void {
-  if (event.key === 'Escape' && full.value && !editorDialog.value?.open) {
+  if (event.key === 'Escape' && full.value) {
     full.value = false
   }
+}
+
+function clearTable(): void {
+  if (busy.value) return
+  cache.value = {}
+  total.value = null
+  pageCount.value = 1
+  page.value = 1
+  pendingPage.value = null
+  loadError.value = ''
+}
+
+async function loadTestData(): Promise<void> {
+  if (busy.value) return
+  cache.value = {}
+  total.value = null
+  pageCount.value = 1
+  page.value = 1
+  loadError.value = ''
+  await goTo(1)
 }
 
 async function fetchPage(pageNumber: number): Promise<ApiPage> {
@@ -517,7 +360,7 @@ async function fetchPage(pageNumber: number): Promise<ApiPage> {
   }
 }
 
-async function goTo(target: number, edge: 'top' | 'bottom' = 'top'): Promise<void> {
+async function goTo(target: number): Promise<void> {
   if (busy.value) return
   const targetPage = Math.min(Math.max(1, target), pageCount.value)
   if (!cache.value[targetPage]) {
@@ -528,6 +371,7 @@ async function goTo(target: number, edge: 'top' | 'bottom' = 'top'): Promise<voi
       const result = await fetchPage(targetPage)
       total.value = result.total ?? total.value ?? result.data.length
       pageCount.value = result.last_page || pageCount.value
+      itemsPerPage.value = result.per_page || itemsPerPage.value
       const rows = result.data.map(normalizeUser)
       cache.value[targetPage] = {
         rows,
@@ -541,17 +385,9 @@ async function goTo(target: number, edge: 'top' | 'bottom' = 'top'): Promise<voi
       pendingPage.value = null
     }
     if (!cache.value[targetPage]) return
-  } else if (targetPage === page.value && shownPage !== null) {
-    return
-  }
+  } else if (targetPage === page.value) return
 
-  if (shownPage !== null && targetPage !== page.value) lockScroll()
   page.value = targetPage
-  shownPage = targetPage
-  await nextTick()
-  if (destroyed) return
-  const element = wrap.value
-  jumpTo(edge === 'bottom' && element ? element.scrollHeight : 0)
 }
 
 onMounted(() => {
@@ -560,10 +396,7 @@ onMounted(() => {
 })
 
 onBeforeUnmount(() => {
-  destroyed = true
   window.removeEventListener('keydown', handleKeydown)
-  if (lockTimer !== undefined) window.clearTimeout(lockTimer)
-  if (editorDialog.value?.open) editorDialog.value.close()
 })
 </script>
 
@@ -588,12 +421,15 @@ onBeforeUnmount(() => {
   font-size: 0.85rem;
 }
 
+.table-toolbar {
+  display: flex;
+  justify-content: flex-end;
+  margin-bottom: 12px;
+}
+
 .wrap {
-  container-type: size;
-  height: 70vh;
-  height: 70dvh;
-  max-height: 70vh;
-  overflow: scroll;
+  container-type: inline-size;
+  overflow: auto;
   overscroll-behavior: contain;
   overflow-anchor: none;
   border-radius: 10px;
@@ -619,10 +455,6 @@ onBeforeUnmount(() => {
 
 .wrap::-webkit-scrollbar-corner {
   background: #e6e8ee;
-}
-
-.wrap.locked {
-  touch-action: none;
 }
 
 thead th {
@@ -656,7 +488,6 @@ thead th:first-child {
 
 table {
   width: 100%;
-  min-width: 1800px;
   border-collapse: collapse;
 }
 
@@ -684,6 +515,12 @@ td.name {
   max-width: 260px;
 }
 
+td.empty-state {
+  padding: 24px;
+  color: #5b6272;
+  text-align: center;
+}
+
 td.mono {
   color: #4a5160;
   font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
@@ -701,6 +538,15 @@ img.avatar {
 
 tr:hover td {
   background: #fafbfd;
+}
+
+.user-row {
+  cursor: pointer;
+}
+
+.user-row:focus-visible {
+  outline: 2px solid #2f5bea;
+  outline-offset: -2px;
 }
 
 .tablebox {
@@ -732,8 +578,6 @@ tr:hover td {
 .full .wrap {
   position: absolute;
   inset: 0;
-  height: auto;
-  max-height: none;
 }
 
 .full .footer {
@@ -847,145 +691,35 @@ tr:hover td {
   }
 }
 
-td.editable {
-  cursor: text;
-}
-
-dialog.editor {
-  width: min(480px, calc(100vw - 32px));
-  padding: 0;
-  border: 0;
-  border-radius: 12px;
-  color: #1f2430;
-  box-shadow: 0 10px 40px rgb(0 0 0 / 30%);
-}
-
-dialog.editor::backdrop {
-  background: rgb(20 24 36 / 50%);
-}
-
-dialog.editor form {
-  display: flex;
-  flex-direction: column;
-  gap: 12px;
-  margin: 0;
-  padding: 18px;
-}
-
-dialog.editor h2 {
-  margin: 0;
-  font-size: 1.05rem;
-}
-
-dialog.editor label {
-  color: #5b6272;
-  font-size: 0.8rem;
-  letter-spacing: 0.04em;
-  text-transform: uppercase;
-}
-
-dialog.editor input,
-dialog.editor textarea {
-  box-sizing: border-box;
-  width: 100%;
-  padding: 10px;
-  border: 1px solid #cfd3dd;
-  border-radius: 8px;
-  font: inherit;
-  font-size: 1rem;
-}
-
-dialog.editor input:focus,
-dialog.editor textarea:focus {
-  border-color: transparent;
-  outline: 2px solid #2f5bea;
-}
-
-dialog.editor textarea {
-  min-height: 140px;
-  resize: vertical;
-}
-
-dialog.editor .err {
-  min-height: 1em;
-  margin: 0;
-  color: #c62828;
-  font-size: 0.85rem;
-}
-
-dialog.editor .actions {
-  display: flex;
-  justify-content: flex-end;
-  gap: 8px;
-}
-
-dialog.editor button {
-  padding: 8px 16px;
-  border: 1px solid #cfd3dd;
-  border-radius: 6px;
-  background: #fff;
-  font-size: 0.95rem;
-  cursor: pointer;
-}
-
-dialog.editor button.primary {
-  border-color: #2f5bea;
-  background: #2f5bea;
-  color: #fff;
-}
-
-td.edited::after {
-  display: inline-block;
-  width: 6px;
-  height: 6px;
-  margin-left: 6px;
-  border-radius: 50%;
-  background: #2f5bea;
-  vertical-align: middle;
-  content: '';
-}
-
 .footer {
-  display: flex;
-  flex-wrap: wrap;
-  align-items: center;
-  justify-content: space-between;
-  gap: 12px;
   margin-top: 14px;
 }
 
-.pager {
-  display: flex;
-  align-items: center;
-  gap: 6px;
-}
-
-.pager button {
-  padding: 6px 12px;
-  border: 1px solid #cfd3dd;
-  border-radius: 6px;
-  background: #fff;
-  font-size: 0.9rem;
-  cursor: pointer;
-}
-
-.pager button:disabled {
-  opacity: 0.45;
-  cursor: default;
-}
-
-.pager select {
-  padding: 6px 8px;
-  border: 1px solid #2f5bea;
-  border-radius: 6px;
-  background: #2f5bea;
-  color: #fff;
-  font-size: 0.9rem;
-  cursor: pointer;
+.footer :deep(.pagination) {
+  margin-top: 0;
 }
 
 .info {
   color: #5b6272;
   font-size: 0.9rem;
+}
+
+.table-actions {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  margin-top: 12px;
+}
+
+.user-form-fields {
+  max-height: min(65vh, 620px);
+  overflow-y: auto;
+}
+
+.form-note {
+  margin: 0 0 12px;
+  color: #5b6272;
+  font-size: 0.85rem;
 }
 </style>

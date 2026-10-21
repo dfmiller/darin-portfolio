@@ -24,6 +24,7 @@ export const skills: string[] = [
   'jQuery',
   'Storybook',
   'Design Systems',
+  'Reusable Components',
   'Flutter',
   'PHP',
   'Laravel',

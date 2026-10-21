@@ -15,9 +15,9 @@ const routes = [
   },
   {
     path: '/design-systems',
-    name: 'Design Systems',
+    name: 'Reusable Components',
     component: DesignSystemPage,
-    meta: { title: 'Design Systems' },
+    meta: { title: 'Reusable Components' },
   },
   {
     path: '/settings',

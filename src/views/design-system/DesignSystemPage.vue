@@ -1,15 +1,20 @@
 
 <template>
   <div class="page-content">
-    <BaseTabs v-model="tab" in-page-header hide-tabs>
+    <BaseTabs v-model="tab" in-page-header>
       <template #tabs>
-        <v-tab value="sample">Sample</v-tab>
+        <v-tab value="components">Components</v-tab>
+        <v-tab value="sample">Samples</v-tab>
         <v-tab value="info">Info</v-tab>
       </template>
+
+      <v-tabs-window-item value="components">
+        <ComponentsTab />
+      </v-tabs-window-item>
       
       <v-tabs-window-item value="sample">
         <SampleTab />
-        <!-- <CommentsTable /> -->
+        <CommentsTable />
       </v-tabs-window-item>
 
       <v-tabs-window-item value="info">
@@ -21,9 +26,10 @@
 
 <script setup lang="ts">
 import { ref } from 'vue'
-//import CommentsTable from './CommentsTable.vue'
-import InfoTab from './InfoTab.vue'
+import ComponentsTab from './ComponentsTab.vue'
 import SampleTab from './SampleTab.vue'
+import CommentsTable from './CommentsTable.vue'
+import InfoTab from './InfoTab.vue'
 
 const tab = ref('sample')
 </script>

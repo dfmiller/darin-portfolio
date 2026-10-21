@@ -44,6 +44,7 @@
         <v-chip>Blade</v-chip>
         <v-chip>JavaScript</v-chip>
         <v-chip>Design Systems</v-chip>
+        <v-chip>Reusable Components</v-chip>
       </div>
     </article>
 
@@ -153,6 +154,7 @@
         <v-chip>Storybook</v-chip>
         <v-chip>Sass</v-chip>
         <v-chip>Design Systems</v-chip>
+        <v-chip>Reusable Components</v-chip>
         <v-chip>CSV Validation</v-chip>
       </div>
     </article>

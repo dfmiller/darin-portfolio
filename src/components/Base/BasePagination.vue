@@ -31,8 +31,8 @@ const handlePageSizeSelect = (event) => {
 
 <template>
   <div class="pagination">
-    <div class="pagination-info">{{ total }} rows</div>
-    <div class="pagination-controls">
+    <div class="pagination-summary">
+      <div class="pagination-info">{{ total }} rows</div>
       <label class="no-wrap">
         <span>Rows per page:</span>
         <select
@@ -47,70 +47,70 @@ const handlePageSizeSelect = (event) => {
           </option>
         </select>
       </label>
-      <div class="pager" aria-label="Pagination">
-        <v-icon
-          icon="mdi-chevron-double-left"
-          class="page-control"
-          role="button"
-          aria-label="First page"
-          title="First page"
-          :aria-disabled="isFirstPage()"
-          :tabindex="isFirstPage() ? -1 : 0"
-          @click="goToPage(1)"
-          @keydown.enter.prevent="goToPage(1)"
-          @keydown.space.prevent="goToPage(1)"
-        />
-        <v-icon
-          icon="mdi-chevron-left"
-          class="page-control"
-          role="button"
-          aria-label="Previous page"
-          title="Previous page"
-          :aria-disabled="isFirstPage()"
-          :tabindex="isFirstPage() ? -1 : 0"
-          @click="goToPage(modelValue - 1)"
-          @keydown.enter.prevent="goToPage(modelValue - 1)"
-          @keydown.space.prevent="goToPage(modelValue - 1)"
-        />
-        <div class="no-wrap">
-          <select
-            title="Go to page"
-            aria-label="Current page"
-            :value="modelValue"
-            :disabled="loading"
-            @change="handlePageSelect"
-          >
-            <option v-for="pageNumber in pageCount" :key="pageNumber" :value="pageNumber">
-              {{ pageNumber }}
-            </option>
-          </select>
-          <span>&nbsp;of {{ pageCount }}</span>
-        </div>
-        <v-icon
-          icon="mdi-chevron-right"
-          class="page-control"
-          role="button"
-          aria-label="Next page"
-          title="Next page"
-          :aria-disabled="isLastPage()"
-          :tabindex="isLastPage() ? -1 : 0"
-          @click="goToPage(modelValue + 1)"
-          @keydown.enter.prevent="goToPage(modelValue + 1)"
-          @keydown.space.prevent="goToPage(modelValue + 1)"
-        />
-        <v-icon
-          icon="mdi-chevron-double-right"
-          class="page-control"
-          role="button"
-          aria-label="Last page"
-          title="Last page"
-          :aria-disabled="isLastPage()"
-          :tabindex="isLastPage() ? -1 : 0"
-          @click="goToPage(pageCount)"
-          @keydown.enter.prevent="goToPage(pageCount)"
-          @keydown.space.prevent="goToPage(pageCount)"
-        />
+    </div>
+    <div class="pager" aria-label="Pagination">
+      <v-icon
+        icon="mdi-chevron-double-left"
+        class="page-control"
+        role="button"
+        aria-label="First page"
+        title="First page"
+        :aria-disabled="isFirstPage()"
+        :tabindex="isFirstPage() ? -1 : 0"
+        @click="goToPage(1)"
+        @keydown.enter.prevent="goToPage(1)"
+        @keydown.space.prevent="goToPage(1)"
+      />
+      <v-icon
+        icon="mdi-chevron-left"
+        class="page-control"
+        role="button"
+        aria-label="Previous page"
+        title="Previous page"
+        :aria-disabled="isFirstPage()"
+        :tabindex="isFirstPage() ? -1 : 0"
+        @click="goToPage(modelValue - 1)"
+        @keydown.enter.prevent="goToPage(modelValue - 1)"
+        @keydown.space.prevent="goToPage(modelValue - 1)"
+      />
+      <div class="no-wrap">
+        <select
+          title="Go to page"
+          aria-label="Current page"
+          :value="modelValue"
+          :disabled="loading"
+          @change="handlePageSelect"
+        >
+          <option v-for="pageNumber in pageCount" :key="pageNumber" :value="pageNumber">
+            {{ pageNumber }}
+          </option>
+        </select>
+        <span>&nbsp;of {{ pageCount }}</span>
       </div>
+      <v-icon
+        icon="mdi-chevron-right"
+        class="page-control"
+        role="button"
+        aria-label="Next page"
+        title="Next page"
+        :aria-disabled="isLastPage()"
+        :tabindex="isLastPage() ? -1 : 0"
+        @click="goToPage(modelValue + 1)"
+        @keydown.enter.prevent="goToPage(modelValue + 1)"
+        @keydown.space.prevent="goToPage(modelValue + 1)"
+      />
+      <v-icon
+        icon="mdi-chevron-double-right"
+        class="page-control"
+        role="button"
+        aria-label="Last page"
+        title="Last page"
+        :aria-disabled="isLastPage()"
+        :tabindex="isLastPage() ? -1 : 0"
+        @click="goToPage(pageCount)"
+        @keydown.enter.prevent="goToPage(pageCount)"
+        @keydown.space.prevent="goToPage(pageCount)"
+      />
     </div>
   </div>
 </template>
@@ -131,18 +131,19 @@ const handlePageSizeSelect = (event) => {
   margin-right: auto;
 }
 
-.pagination-controls,
+.pagination-summary,
 .pager {
   display: flex;
   align-items: center;
   flex-wrap: wrap;
 }
 
-.pagination-controls {
-  gap: 12px;
+.pagination-summary {
+  display: contents;
 }
 
 .pager {
+  justify-self: end;
   gap: 6px;
 }
 
@@ -157,7 +158,22 @@ const handlePageSizeSelect = (event) => {
   cursor: pointer;
 }
 
-.pagination-controls .page-size-select {
+.pager select,
+.page-size-select {
+  scrollbar-width: none;
+}
+
+.pager select::-webkit-scrollbar,
+.page-size-select::-webkit-scrollbar {
+  display: none;
+}
+
+.pager option,
+.page-size-select option {
+  padding-right: 12px;
+}
+
+.page-size-select {
   margin-left: 4px;
   padding: 5px 8px;
   border: 1px solid #8a92a6;
@@ -165,6 +181,7 @@ const handlePageSizeSelect = (event) => {
   background: transparent;
   color: inherit;
   font-size: inherit;
+  text-align: right;
   cursor: pointer;
 }
 
@@ -184,5 +201,24 @@ const handlePageSizeSelect = (event) => {
 
 .no-wrap {
   white-space: nowrap;
+}
+
+@media (max-width: 600px) {
+  .pagination-summary {
+    display: flex;
+    flex-basis: 100%;
+    align-items: center;
+    justify-content: space-between;
+    gap: 8px;
+  }
+
+  .pagination-info {
+    margin-right: 0;
+  }
+
+  .pager {
+    flex: 1 1 auto;
+    justify-content: flex-end;
+  }
 }
 </style>

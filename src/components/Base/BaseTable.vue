@@ -95,6 +95,16 @@ const tableProps = computed(() => ({
         loading: props.loading,
       }),
 }))
+const mobileRows = computed(() => {
+  if (props.serverItemsLength !== undefined) return sortedRows.value
+  const start = (activePage.value - 1) * localItemsPerPage.value
+  return sortedRows.value.slice(start, start + localItemsPerPage.value)
+})
+const handleCardKeydown = (event, item) => {
+  if (event.target !== event.currentTarget || (event.key !== 'Enter' && event.key !== ' ')) return
+  event.preventDefault()
+  emit('click:row', item)
+}
 </script>
 
 <template>
@@ -112,15 +122,45 @@ const tableProps = computed(() => ({
         * Filtering and sorting apply to this page only due to lack of backend support.
       </p>
     </div>
-    <component
-      :is="tableComponent"
-      v-bind="tableProps"
-      @update:page="handlePageUpdate"
-      @update:sort-by="sortBy = $event"
-      @click:row="handleRowClick"
-    >
-      <template v-for="(_, name) in $slots" #[name]="slotProps"><slot :name="name" v-bind="slotProps || {}" /></template>
-    </component>
+    <div class="base-table-desktop">
+      <component
+        :is="tableComponent"
+        v-bind="tableProps"
+        @update:page="handlePageUpdate"
+        @update:sort-by="sortBy = $event"
+        @click:row="handleRowClick"
+      >
+        <template v-for="(_, name) in $slots" #[name]="slotProps"><slot :name="name" v-bind="slotProps || {}" /></template>
+      </component>
+    </div>
+    <div class="base-table-mobile">
+      <div
+        v-for="(item, index) in mobileRows"
+        :key="item.id ?? item.key ?? index"
+        class="mobile-row-card"
+        role="button"
+        tabindex="0"
+        @click="handleRowClick($event, { item })"
+        @keydown="handleCardKeydown($event, item)"
+      >
+        <div v-for="column in columns" :key="column.key" class="mobile-card-field">
+          <span class="mobile-card-label">{{ column.label || column.key }}</span>
+          <span class="mobile-card-value">
+            <slot
+              :name="`item.${column.key}`"
+              :item="item"
+              :value="item[column.key]"
+              :column="column"
+            >
+              {{ item[column.key] ?? '—' }}
+            </slot>
+          </span>
+        </div>
+      </div>
+      <div v-if="mobileRows.length === 0" class="mobile-empty">
+        <slot name="no-data">No data available</slot>
+      </div>
+    </div>
     <BasePagination
       v-if="!hideDefaultFooter"
       :model-value="activePage"
@@ -154,7 +194,65 @@ const tableProps = computed(() => ({
   text-align: right;
 }
 
+.base-table-mobile {
+  display: none;
+}
+
+.mobile-row-card {
+  margin-bottom: 12px;
+  padding: 16px;
+  border: 1px solid rgba(var(--v-border-color), var(--v-border-opacity));
+  border-radius: 10px;
+  background: rgb(var(--v-theme-surface));
+  box-shadow: 0 1px 3px rgb(0 0 0 / 8%);
+  cursor: pointer;
+}
+
+.mobile-row-card:focus-visible {
+  outline: 2px solid rgb(var(--v-theme-primary));
+  outline-offset: 2px;
+}
+
+.mobile-card-field {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 16px;
+  padding: 6px 0;
+  border-bottom: 1px solid rgba(var(--v-border-color), var(--v-border-opacity));
+}
+
+.mobile-card-field:last-child {
+  border-bottom: 0;
+}
+
+.mobile-card-label {
+  flex: 0 0 35%;
+  color: rgba(var(--v-theme-on-surface), var(--v-medium-emphasis-opacity));
+  font-size: 0.8rem;
+  font-weight: 600;
+}
+
+.mobile-card-value {
+  min-width: 0;
+  text-align: right;
+  overflow-wrap: anywhere;
+}
+
+.mobile-empty {
+  padding: 16px;
+  text-align: center;
+}
+
 @media (max-width: 600px) {
+  .base-table-desktop {
+    display: none;
+  }
+
+  .base-table-mobile {
+    display: block;
+  }
+
   .table-toolbar {
     align-items: stretch;
     flex-direction: column;

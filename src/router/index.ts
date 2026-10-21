@@ -3,6 +3,7 @@ import { createRouter, createWebHistory } from 'vue-router'
 
 import HomePage from '../views/HomePage.vue'
 import DesignSystemPage from '../views/design-system/DesignSystemPage.vue'
+import NotFoundPage from '../views/NotFoundPage.vue'
 import SettingsPage from '../views/SettingsPage.vue'
 
 const routes = [
@@ -23,6 +24,12 @@ const routes = [
     name: 'Settings',
     component: SettingsPage,
     meta: { title: 'Settings' },
+  },
+  {
+    path: '/:pathMatch(.*)*',
+    name: 'NotFound',
+    component: NotFoundPage,
+    meta: { title: 'Page Not Found' },
   },
 ]
 

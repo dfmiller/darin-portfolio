@@ -24,12 +24,27 @@
 </template>
 
 <script setup lang="ts">
-import { ref } from 'vue'
+import { computed } from 'vue'
+import { useRoute, useRouter } from 'vue-router'
 import ComponentsTab from './ComponentsTab.vue'
 import SampleTab from './SampleTab.vue'
 import InfoTab from './InfoTab.vue'
 
-const tab = ref('components')
+const route = useRoute()
+const router = useRouter()
+const tabs = ['components', 'sample', 'info'] as const
+type Tab = typeof tabs[number]
+
+const tab = computed<Tab>({
+  get: () => {
+    const hashTab = route.hash.slice(1)
+    return tabs.find(candidate => candidate === hashTab) ?? 'components'
+  },
+  set: value => {
+    const hash = `#${value}`
+    if (route.hash !== hash) void router.push({ hash })
+  },
+})
 </script>
 
 <style scoped>

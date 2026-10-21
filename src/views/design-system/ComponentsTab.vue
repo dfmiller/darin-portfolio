@@ -71,26 +71,7 @@ const changeDemoPageSize = (itemsPerPage: number) => {
 <template>
   <div class="component-catalog">
 
-    <div class="section-links">
-        <a href="#avatars">Avatars</a>
-        <a href="#buttons">Buttons</a>
-        <a href="#checkbox">Checkbox</a>
-        <a href="#combobox">Combobox</a>
-        <a href="#date-field">Date field</a>
-        <a href="#dialog">Dialog</a>
-        <a href="#file-input">File input</a>
-        <a href="#icon-buttons">Icon buttons</a>
-        <a href="#pagination">Pagination</a>
-        <a href="#radio-group">Radio group</a>
-        <a href="#switch">Switch</a>
-        <a href="#table">Table</a>
-        <a href="#tabs">Tabs</a>
-        <a href="#text-fields">Text fields</a>
-        <a href="#textarea">Textarea</a>
-        <a href="#toast">Toast</a>
-    </div>
-
-    <section id="avatars" class="component-section">
+    <section class="component-section">
       <h2>Avatars</h2>
       <div class="examples">
         <BaseAvatar :size="32" alt="Small avatar" src="https://testingbot.com/free-online-tools/random-avatar/32" />
@@ -102,7 +83,7 @@ const changeDemoPageSize = (itemsPerPage: number) => {
       </div>
     </section>
 
-    <section id="buttons" class="component-section">
+    <section class="component-section">
       <h2>Buttons</h2>
       <div class="examples">
         <BaseButton variant="primary">Primary</BaseButton>
@@ -117,7 +98,7 @@ const changeDemoPageSize = (itemsPerPage: number) => {
       </div>
     </section>
 
-    <section id="checkbox" class="component-section">
+    <section class="component-section">
       <h2>Checkbox</h2>
       <div class="examples examples--stacked">
         <BaseCheckbox v-model="checkboxValue" label="Accept the terms" />
@@ -125,7 +106,7 @@ const changeDemoPageSize = (itemsPerPage: number) => {
       </div>
     </section>
 
-    <section id="combobox" class="component-section">
+    <section class="component-section">
       <h2>Combobox</h2>
       <div class="field-grid">
         <BaseCombobox v-model="comboboxValue" label="Combobox" :options="options" hint="Choose or enter a custom value" />
@@ -171,7 +152,7 @@ const changeDemoPageSize = (itemsPerPage: number) => {
       <BaseFileInput v-model="fileValue" label="Upload a file" accept="image/*" hint="Images only" />
     </section>
 
-    <section id="icon-buttons" class="component-section">
+    <section class="component-section">
       <h2>Icon buttons</h2>
       <div class="examples">
         <BaseIconButton icon="mdi-pencil-outline" label="Edit" />
@@ -180,7 +161,7 @@ const changeDemoPageSize = (itemsPerPage: number) => {
       </div>
     </section>
 
-    <section id="pagination" class="component-section">
+    <section class="component-section">
       <h2>Pagination</h2>
       <BasePagination
         v-model="demoPage"
@@ -225,7 +206,7 @@ const changeDemoPageSize = (itemsPerPage: number) => {
       </BaseTabs>
     </section>
 
-    <section id="text-fields" class="component-section">
+    <section class="component-section">
       <h2>Text fields</h2>
       <div class="field-grid">
         <BaseTextField v-model="textValue" label="Name" hint="Enter your full name" />

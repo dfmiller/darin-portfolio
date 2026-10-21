@@ -5,7 +5,6 @@ import BasePagination from './BasePagination.vue'
 const props = defineProps({
   columns: Array,
   rows: Array,
-  searchable: { type: Boolean, default: true },
   itemsPerPage: { type: Number, default: 10 },
   page: { type: Number, default: 1 },
   serverItemsLength: Number,
@@ -109,19 +108,6 @@ const handleCardKeydown = (event, item) => {
 
 <template>
   <div>
-    <div v-if="searchable" class="table-toolbar">
-      <v-text-field
-        v-model="q"
-        placeholder="Filter rows"
-        prepend-inner-icon="mdi-magnify"
-        variant="underlined"
-        hide-details
-        class="table-filter"
-      />
-      <p v-if="serverItemsLength !== undefined" class="table-filter-note">
-        * Filtering and sorting apply to this page only due to lack of backend support.
-      </p>
-    </div>
     <div class="base-table-desktop">
       <component
         :is="tableComponent"

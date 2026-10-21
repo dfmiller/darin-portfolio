@@ -9,7 +9,7 @@
         <h1 v-if="title">{{ title }}</h1>
         <small v-if="subtitle">{{ subtitle }}</small>
       </div>
-      <div id="page-header-tabs" />
+      <div id="page-header-tabs" class="page-header-tabs" />
       <nav v-if="links?.length" aria-label="Page sections">
         <a
           v-for="link in links"
@@ -57,6 +57,10 @@ defineProps<{
   align-items: center;
   justify-content: space-between;
   gap: 24px;
+}
+
+.page-header-tabs {
+  margin-bottom: -24px;
 }
 
 h1 {

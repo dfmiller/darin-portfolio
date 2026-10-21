@@ -1,4 +1,6 @@
 <script setup>
+import { computed } from 'vue'
+
 const props = defineProps({
   modelValue: { type: Number, required: true },
   pageCount: { type: Number, required: true },
@@ -6,7 +8,8 @@ const props = defineProps({
   itemsPerPage: { type: Number, required: true },
   loading: Boolean,
 })
-const emit = defineEmits(['update:modelValue'])
+const emit = defineEmits(['update:modelValue', 'update:itemsPerPage'])
+const pageSizeOptions = computed(() => [...new Set([5, 10, 25, 50, 100, props.itemsPerPage])].sort((a, b) => a - b))
 
 const isFirstPage = () => props.loading || props.modelValue <= 1
 const isLastPage = () => props.loading || props.modelValue >= props.pageCount
@@ -18,13 +21,32 @@ const handlePageSelect = (event) => {
   const selectedPage = Number(event.currentTarget.value)
   if (Number.isInteger(selectedPage)) goToPage(selectedPage)
 }
+const handlePageSizeSelect = (event) => {
+  const selectedSize = Number(event.currentTarget.value)
+  if (Number.isInteger(selectedSize) && selectedSize > 0 && selectedSize !== props.itemsPerPage) {
+    emit('update:itemsPerPage', selectedSize)
+  }
+}
 </script>
 
 <template>
   <div class="pagination">
     <div class="pagination-info">{{ total }} rows</div>
     <div class="pagination-controls">
-      <span>Rows per page: {{ itemsPerPage }}</span>
+      <label class="no-wrap">
+        <span>Rows per page:</span>
+        <select
+          class="page-size-select"
+          aria-label="Rows per page"
+          :value="itemsPerPage"
+          :disabled="loading"
+          @change="handlePageSizeSelect"
+        >
+          <option v-for="pageSize in pageSizeOptions" :key="pageSize" :value="pageSize">
+            {{ pageSize }}
+          </option>
+        </select>
+      </label>
       <div class="pager" aria-label="Pagination">
         <v-icon
           icon="mdi-chevron-double-left"
@@ -50,18 +72,20 @@ const handlePageSelect = (event) => {
           @keydown.enter.prevent="goToPage(modelValue - 1)"
           @keydown.space.prevent="goToPage(modelValue - 1)"
         />
-        <select
-          title="Go to page"
-          aria-label="Current page"
-          :value="modelValue"
-          :disabled="loading"
-          @change="handlePageSelect"
-        >
-          <option v-for="pageNumber in pageCount" :key="pageNumber" :value="pageNumber">
-            {{ pageNumber }}
-          </option>
-        </select>
-        <span>of {{ pageCount }}</span>
+        <div class="no-wrap">
+          <select
+            title="Go to page"
+            aria-label="Current page"
+            :value="modelValue"
+            :disabled="loading"
+            @change="handlePageSelect"
+          >
+            <option v-for="pageNumber in pageCount" :key="pageNumber" :value="pageNumber">
+              {{ pageNumber }}
+            </option>
+          </select>
+          <span>&nbsp;of {{ pageCount }}</span>
+        </div>
         <v-icon
           icon="mdi-chevron-right"
           class="page-control"
@@ -111,6 +135,7 @@ const handlePageSelect = (event) => {
 .pager {
   display: flex;
   align-items: center;
+  flex-wrap: wrap;
 }
 
 .pagination-controls {
@@ -132,6 +157,21 @@ const handlePageSelect = (event) => {
   cursor: pointer;
 }
 
+.pagination-controls .page-size-select {
+  margin-left: 4px;
+  padding: 5px 8px;
+  border: 1px solid #8a92a6;
+  border-radius: 6px;
+  background: transparent;
+  color: inherit;
+  font-size: inherit;
+  cursor: pointer;
+}
+
+.page-size-select:disabled {
+  cursor: default;
+}
+
 .page-control {
   color: #1f2430;
   cursor: pointer;
@@ -140,5 +180,9 @@ const handlePageSelect = (event) => {
 .page-control[aria-disabled='true'] {
   opacity: 0.45;
   cursor: default;
+}
+
+.no-wrap {
+  white-space: nowrap;
 }
 </style>

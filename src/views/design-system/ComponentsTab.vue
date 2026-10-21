@@ -15,6 +15,7 @@ const switchValue = ref(true)
 const radioValue = ref('email')
 const activeTab = ref('overview')
 const demoPage = ref(2)
+const demoItemsPerPage = ref(10)
 const dialogOpen = ref(false)
 const toastOpen = ref(false)
 const formDialogOpen = ref(false)
@@ -47,10 +48,23 @@ const openToast = () => {
   })
 }
 
+const toastErrorOpen = ref(false)
+const openToastError = () => {
+  toastErrorOpen.value = false
+  requestAnimationFrame(() => {
+    toastErrorOpen.value = true
+  })
+}
+
 const confirmDialog = () => {
   dialogOpen.value = false
   formDialogOpen.value = false
   openToast()
+}
+
+const changeDemoPageSize = (itemsPerPage: number) => {
+  demoItemsPerPage.value = itemsPerPage
+  demoPage.value = 1
 }
 </script>
 
@@ -166,14 +180,25 @@ const confirmDialog = () => {
       </div>
     </section>
 
-        <section class="component-section">
+    <section id="pagination" class="component-section">
+      <h2>Pagination</h2>
+      <BasePagination
+        v-model="demoPage"
+        :page-count="Math.ceil(48 / demoItemsPerPage)"
+        :total="48"
+        :items-per-page="demoItemsPerPage"
+        @update:items-per-page="changeDemoPageSize"
+      />
+    </section>
+
+    <section class="component-section">
       <h2>Radio group</h2>
       <BaseRadioGroup v-model="radioValue" label="Preferred contact" :options="contactOptions" />
     </section>
 
         <section class="component-section">
       <h2>Switch</h2>
-      <div class="examples examples--stacked">
+      <div class="examples">
         <BaseSwitch v-model="switchValue" label="Notifications enabled" />
         <BaseSwitch label="Disabled switch" disabled />
       </div>
@@ -215,15 +240,15 @@ const confirmDialog = () => {
       <BaseTextarea v-model="textareaValue" label="Description" hint="A short summary" />
     </section>
 
-    <section id="pagination" class="component-section">
-      <h2>Pagination</h2>
-      <BasePagination v-model="demoPage" :page-count="5" :total="48" :items-per-page="10" />
-    </section>
-
     <section class="component-section">
       <h2>Toast</h2>
-      <BaseButton @click="openToast">Show toast</BaseButton>
-      <BaseToast v-model="toastOpen" message="Your changes have been saved." />
+      <div class="examples">
+        <BaseButton @click="openToast">Show Toast</BaseButton>
+        <BaseToast v-model="toastOpen" message="Your changes have been saved." />
+        
+        <BaseButton variant="danger" @click="openToastError">Show Toast Error</BaseButton>
+        <BaseToast v-model="toastErrorOpen" color="error" message="An error occurred while saving your changes." />
+      </div>
     </section>
 
   </div>
@@ -232,22 +257,26 @@ const confirmDialog = () => {
 <style scoped>
 
 .section-links {
+  position: sticky;
+  z-index: 2;
+  top: 0;
+  align-self: start;
   display: flex;
   flex-wrap: wrap;
   gap: 8px;
-  margin: 0 16px 16px;
-  position: sticky;
-  top: 0;
+  margin: 0 0 16px;
+  padding: 12px 16px;
+  background: rgb(var(--v-theme-background));
 }
 
 .component-catalog {
-  display: grid;
-  gap: 24px;
+  display: block;
   padding: 8px 0 32px;
 }
 
 .component-section {
   min-width: 0;
+  margin-bottom: 24px;
   padding: 20px 24px;
   border: 1px solid rgba(var(--v-border-color), var(--v-border-opacity));
   border-radius: 12px;

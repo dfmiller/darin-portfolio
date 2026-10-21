@@ -85,6 +85,7 @@
         :items-per-page="itemsPerPage"
         :loading="busy"
         @update:model-value="goTo"
+        @update:items-per-page="changeItemsPerPage"
       />
     </div>
 
@@ -337,10 +338,21 @@ async function loadTestData(): Promise<void> {
   await goTo(1)
 }
 
-async function fetchPage(pageNumber: number): Promise<ApiPage> {
+async function changeItemsPerPage(requestedItemsPerPage: number): Promise<void> {
+  if (busy.value || requestedItemsPerPage === itemsPerPage.value) return
+  itemsPerPage.value = requestedItemsPerPage
+  cache.value = {}
+  total.value = null
+  pageCount.value = 1
+  page.value = 1
+  loadError.value = ''
+  await goTo(1)
+}
+
+async function fetchPage(pageNumber: number, requestedItemsPerPage: number): Promise<ApiPage> {
   for (let attempt = 1; ; attempt += 1) {
     try {
-      const response = await fetch(`${API}?page=${pageNumber}`)
+      const response = await fetch(`${API}?page=${pageNumber}&per_page=${requestedItemsPerPage}`)
       if (!response.ok) throw new Error(`HTTP ${response.status}`)
       const result: unknown = await response.json()
       if (!isRecord(result) || !Array.isArray(result.data) || !result.data.every(isRecord)) {
@@ -368,7 +380,7 @@ async function goTo(target: number): Promise<void> {
     pendingPage.value = targetPage
     loadError.value = ''
     try {
-      const result = await fetchPage(targetPage)
+      const result = await fetchPage(targetPage, itemsPerPage.value)
       total.value = result.total ?? total.value ?? result.data.length
       pageCount.value = result.last_page || pageCount.value
       itemsPerPage.value = result.per_page || itemsPerPage.value

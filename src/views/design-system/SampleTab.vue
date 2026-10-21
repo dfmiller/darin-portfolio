@@ -124,10 +124,10 @@ const confirmClearRows = () => {
   clearRows()
   clearConfirmation.value = false
 }
-const loadRows = async (targetPage = 1) => {
+const loadRows = async (targetPage = 1, targetItemsPerPage = itemsPerPage.value) => {
   loading.value = true
   try {
-    const response = await fetch(`https://jsonfakery.com/users/paginated?page=${targetPage}&per_page=10`)
+    const response = await fetch(`https://jsonfakery.com/users/paginated?page=${targetPage}&per_page=${targetItemsPerPage}`)
     if (!response.ok) throw new Error(`HTTP ${response.status}`)
     const result = await response.json()
     if (!Array.isArray(result?.data) || !result.data.every(user => user && typeof user === 'object' && !Array.isArray(user))) {
@@ -165,6 +165,9 @@ const loadRows = async (targetPage = 1) => {
 }
 const changePage = (targetPage) => {
   if (loaded && targetPage !== page.value) void loadRows(targetPage)
+}
+const changeItemsPerPage = (targetItemsPerPage) => {
+  if (loaded && targetItemsPerPage !== itemsPerPage.value) void loadRows(1, targetItemsPerPage)
 }
 </script>
 
@@ -207,6 +210,7 @@ const changePage = (targetPage) => {
       :items-per-page="itemsPerPage"
       :loading="loading"
       @update:model-value="changePage"
+      @update:items-per-page="changeItemsPerPage"
     />
 
     <v-divider class="my-4" />

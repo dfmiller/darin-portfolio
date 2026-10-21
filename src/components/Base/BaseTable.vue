@@ -1,6 +1,7 @@
 <script setup>
 // columns: [{ key, label }] replaces Vuetify's headers shape.
-import { ref, computed } from 'vue'
+import { ref, computed, watch } from 'vue'
+import BasePagination from './BasePagination.vue'
 const props = defineProps({
   columns: Array,
   rows: Array,
@@ -13,9 +14,11 @@ const props = defineProps({
   fixedHeader: Boolean,
   height: [Number, String],
 })
-const emit = defineEmits(['update:page', 'click:row'])
+const emit = defineEmits(['update:page', 'update:items-per-page', 'click:row'])
 const q = ref('')
 const sortBy = ref([])
+const localPage = ref(props.page)
+const localItemsPerPage = ref(props.itemsPerPage)
 const collator = new Intl.Collator(undefined, { numeric: true, sensitivity: 'base' })
 const headers = computed(() => props.columns.map(c => ({
   title: c.label,
@@ -23,6 +26,22 @@ const headers = computed(() => props.columns.map(c => ({
   sortable: c.sortable ?? c.key !== 'actions',
 })))
 const tableComponent = computed(() => props.serverItemsLength === undefined ? 'v-data-table' : 'v-data-table-server')
+const activePage = computed(() => props.serverItemsLength === undefined ? localPage.value : props.page)
+watch(() => props.page, page => {
+  localPage.value = page
+})
+watch(() => props.itemsPerPage, itemsPerPage => {
+  localItemsPerPage.value = itemsPerPage
+})
+const handlePageUpdate = page => {
+  if (props.serverItemsLength === undefined) localPage.value = page
+  emit('update:page', page)
+}
+const handlePageSizeUpdate = itemsPerPage => {
+  localItemsPerPage.value = itemsPerPage
+  emit('update:items-per-page', itemsPerPage)
+  handlePageUpdate(1)
+}
 const handleRowClick = (_event, { item }) => emit('click:row', item)
 const filteredRows = computed(() => {
   const query = q.value.trim().toLocaleLowerCase()
@@ -52,20 +71,27 @@ const sortedRows = computed(() => {
     return result * direction
   })
 })
+const paginationTotal = computed(() => props.serverItemsLength ?? sortedRows.value.length)
+const pageCount = computed(() => Math.max(1, Math.ceil(paginationTotal.value / Math.max(1, localItemsPerPage.value))))
+watch(pageCount, count => {
+  if (props.serverItemsLength === undefined && localPage.value > count) {
+    handlePageUpdate(count)
+  }
+})
 const tableProps = computed(() => ({
   headers: headers.value,
   items: sortedRows.value,
   sortBy: sortBy.value,
   density: 'comfortable',
-  itemsPerPage: props.itemsPerPage,
-  hideDefaultFooter: props.hideDefaultFooter,
+  itemsPerPage: localItemsPerPage.value,
+  hideDefaultFooter: true,
   fixedHeader: props.fixedHeader,
   height: props.height,
+  page: activePage.value,
   ...(props.serverItemsLength === undefined
     ? {}
     : {
         itemsLength: props.serverItemsLength,
-        page: props.page,
         loading: props.loading,
       }),
 }))
@@ -89,12 +115,22 @@ const tableProps = computed(() => ({
     <component
       :is="tableComponent"
       v-bind="tableProps"
-      @update:page="emit('update:page', $event)"
+      @update:page="handlePageUpdate"
       @update:sort-by="sortBy = $event"
       @click:row="handleRowClick"
     >
       <template v-for="(_, name) in $slots" #[name]="slotProps"><slot :name="name" v-bind="slotProps || {}" /></template>
     </component>
+    <BasePagination
+      v-if="!hideDefaultFooter"
+      :model-value="activePage"
+      :page-count="pageCount"
+      :total="paginationTotal"
+      :items-per-page="localItemsPerPage"
+      :loading="loading"
+      @update:model-value="handlePageUpdate"
+      @update:items-per-page="handlePageSizeUpdate"
+    />
   </div>
 </template>
 

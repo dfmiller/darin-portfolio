@@ -23,68 +23,38 @@
     </div>
 
     <div class="tablebox">
-      <div class="wrap">
-
-        <table>
-          <thead>
-            <tr>
-              <th v-for="column in columns" :key="column.key">{{ column.label }}</th>
-              <th class="delete-action"><span class="visually-hidden">Delete row</span></th>
-            </tr>
-          </thead>
-          <tbody>
-            <tr v-if="!busy && currentRows.length === 0">
-              <td :colspan="columns.length + 1" class="empty-state">
-                No users yet. Use Add User to create the first one.
-              </td>
-            </tr>
-            <tr v-else-if="!busy && filteredRows.length === 0">
-              <td :colspan="columns.length + 1" class="empty-state">
-                No users match this filter.
-              </td>
-            </tr>
-            <tr
-              v-for="entry in filteredRows"
-              :key="entry.row.id"
-              class="user-row"
-              tabindex="0"
-              @click="openForm(entry.row)"
-              @keydown.enter.prevent="openForm(entry.row)"
-            >
-              <td
-                v-for="column in columns"
-                :key="column.key"
-                :class="column.className"
-              >
-                <template v-if="column.key === 'n'">
-                  {{ currentStart + entry.index + 1 }}
-                </template>
-                <img
-                  v-else-if="column.key === 'photo' && entry.row.photo.startsWith('https://')"
-                  class="avatar"
-                  :src="entry.row.photo"
-                  alt=""
-                  width="28"
-                  height="28"
-                  loading="lazy"
-                />
-                <template v-else-if="column.key !== 'photo'">
-                  {{ display(entry.row, column.key) }}
-                </template>
-              </td>
-              <td class="delete-action">
-                <BaseIconButton
-                  icon="mdi-delete-outline"
-                  :label="`Delete ${entry.row.name}`"
-                  danger
-                  @click.stop="requestDelete(entry.row)"
-                  @keydown.stop
-                />
-              </td>
-            </tr>
-          </tbody>
-        </table>
-      </div>
+      <BaseTable
+        class="sample-users-table"
+        :columns="columns"
+        :rows="tableRows"
+        :items-per-page="itemsPerPage"
+        :page="page"
+        :server-items-length="total ?? currentRows.length"
+        :loading="busy"
+        :height="full ? 'calc(100vh - 190px)' : 'max(240px, calc(100vh - 550px))'"
+        fixed-header
+        hide-default-footer
+        @update:page="goTo"
+        @click:row="openForm"
+      >
+        <template #item.delete="{ item }">
+          <BaseIconButton
+            icon="mdi-delete-outline"
+            :label="`Delete ${item.name}`"
+            danger
+            @click.stop="requestDelete(item)"
+            @keydown.stop
+          />
+        </template>
+        <template #item.photo="{ item }">
+          <BaseAvatar :src="item.photo" :alt="`${item.name}'s profile photo`" :size="32" />
+        </template>
+        <template #no-data>
+          <p class="pa-6">
+            {{ currentRows.length ? 'No users match this filter.' : 'No users yet. Use Add User to create the first one.' }}
+          </p>
+        </template>
+      </BaseTable>
 
       <button
         type="button"
@@ -180,7 +150,7 @@ const contacts = [
   { value: 'phone', label: 'Phone' },
   { value: 'none', label: "Don't contact" },
 ]
-type ColumnKey = 'n' | 'photo' | 'name' | 'email' | 'role' | 'country' | 'created' | 'verified' | 'id'
+type ColumnKey = 'delete' | 'n' | 'photo' | 'name' | 'email' | 'role' | 'country' | 'created' | 'verified' | 'id'
 
 interface UserRow {
   id: string
@@ -216,6 +186,7 @@ interface Column {
   key: ColumnKey
   label: string
   className: string
+  sortable?: boolean
 }
 
 interface CachedPage {
@@ -241,6 +212,7 @@ const columns = [
   { key: 'created', label: 'Created', className: 'nw' },
   { key: 'verified', label: 'Verified', className: 'nw' },
   { key: 'id', label: 'ID', className: 'nw mono' },
+  { key: 'delete', label: 'Delete', className: 'delete-action', sortable: false },
 ] satisfies readonly Column[]
 
 const dateKeys = new Set<ColumnKey>(['created', 'verified'])
@@ -282,6 +254,7 @@ const filteredRows = computed(() => {
   if (!query) return rows
 
   return rows.filter(({ row, index }) => columns.some(({ key }) => {
+    if (key === 'delete') return false
     const value = key === 'n'
       ? currentStart.value + index + 1
       : key === 'photo'
@@ -290,6 +263,10 @@ const filteredRows = computed(() => {
     return String(value).toLocaleLowerCase().includes(query)
   }))
 })
+const tableRows = computed(() => filteredRows.value.map(({ row, index }) => ({
+  ...row,
+  n: currentStart.value + index + 1,
+})))
 const statusText = computed(() => {
   if (busy.value) return `Loading page ${pendingPage.value}…`
   return loadError.value
@@ -354,7 +331,7 @@ function formatDate(iso: string): string {
 }
 
 function display(row: UserRow, key: ColumnKey): string {
-  if (key === 'n' || key === 'photo') return ''
+  if (key === 'delete' || key === 'n' || key === 'photo') return ''
   return dateKeys.has(key)
     ? formatDate(row[key])
     : row[key]
@@ -547,8 +524,6 @@ onBeforeUnmount(() => {
 
 <style scoped>
 .comments-table {
-  --head: 38px;
-  --idw: 56px;
   position: relative;
   color: #1f2430;
   font-family: system-ui, sans-serif;
@@ -613,146 +588,71 @@ onBeforeUnmount(() => {
   }
 }
 
-.wrap {
-  container-type: inline-size;
-  overflow: auto;
-  overscroll-behavior: contain;
-  overflow-anchor: none;
+.sample-users-table :deep(.v-table) {
+  --v-table-header-height: 38px;
+
   border-radius: 10px;
   background: #fff;
   box-shadow: 0 1px 3px rgb(0 0 0 / 10%);
-  scrollbar-color: #8a92a6 #e6e8ee;
-  max-height: calc(100vh - 550px);
+  color: #1f2430;
 }
 
-.wrap::-webkit-scrollbar {
+.sample-users-table :deep(.v-table__wrapper) {
+  scrollbar-color: #8a92a6 #e6e8ee;
+}
+
+.sample-users-table :deep(.v-table__wrapper)::-webkit-scrollbar {
   width: 14px;
   height: 14px;
 }
 
-.wrap::-webkit-scrollbar-track {
+.sample-users-table :deep(.v-table__wrapper)::-webkit-scrollbar-track {
   background: #e6e8ee;
 }
 
-.wrap::-webkit-scrollbar-thumb {
+.sample-users-table :deep(.v-table__wrapper)::-webkit-scrollbar-thumb {
   border: 3px solid #e6e8ee;
   border-radius: 7px;
   background: #8a92a6;
 }
 
-.wrap::-webkit-scrollbar-corner {
+.sample-users-table :deep(.v-table__wrapper)::-webkit-scrollbar-corner {
   background: #e6e8ee;
 }
 
-thead th {
-  position: sticky;
-  z-index: 1;
-  top: 0;
-  box-sizing: border-box;
-  height: var(--head);
-}
-
-th:first-child,
-td:first-child {
-  position: sticky;
-  left: 0;
-  box-sizing: border-box;
-  width: var(--idw);
-  min-width: var(--idw);
-  max-width: var(--idw);
-  border-right: 1px solid #e6e8ee;
-}
-
-td:first-child,
-tr:hover td:first-child {
-  z-index: 1;
+.sample-users-table :deep(.v-table__wrapper th) {
   background: #eef0f5;
-}
-
-thead th:first-child {
-  z-index: 2;
-}
-
-.delete-action {
-  width: 48px;
-  min-width: 48px;
-  max-width: 48px;
-  padding: 2px 4px;
-  text-align: center;
-}
-
-.visually-hidden {
-  position: absolute;
-  width: 1px;
-  height: 1px;
-  padding: 0;
-  overflow: hidden;
-  clip: rect(0, 0, 0, 0);
-  white-space: nowrap;
-  border: 0;
-}
-
-table {
-  width: 100%;
-  border-collapse: collapse;
-}
-
-th,
-td {
-  padding: 10px 14px;
-  border-bottom: 1px solid #e6e8ee;
-  text-align: left;
-  vertical-align: top;
-}
-
-th {
-  background: #eef0f5;
+  color: #1f2430;
   font-size: 0.8rem;
   letter-spacing: 0.04em;
+  text-align: left;
   text-transform: uppercase;
   white-space: nowrap;
 }
 
-td.nw {
-  white-space: nowrap;
+.sample-users-table :deep(.v-table__wrapper td),
+.sample-users-table :deep(.v-table__wrapper th) {
+  border-bottom: 1px solid #e6e8ee;
 }
 
-td.name {
-  max-width: 260px;
-}
-
-td.empty-state {
-  padding: 24px;
-  color: #5b6272;
-  text-align: center;
-}
-
-td.mono {
-  color: #4a5160;
-  font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
-  font-size: 0.8rem;
-}
-
-img.avatar {
-  display: block;
-  width: 28px;
-  height: 28px;
-  border-radius: 50%;
-  background: #e6e8ee;
-  object-fit: cover;
-}
-
-tr:hover td {
+.sample-users-table :deep(.v-table__wrapper tbody tr:hover) {
   background: #fafbfd;
 }
 
-.user-row {
-  cursor: pointer;
+.sample-users-table :deep(.v-table__wrapper th:first-child),
+.sample-users-table :deep(.v-table__wrapper td:first-child) {
+  position: sticky;
+  left: 0;
+  z-index: 1;
+  width: 48px;
+  min-width: 48px;
+  max-width: 48px;
+  background: #eef0f5;
+  border-right: 1px solid #e6e8ee;
 }
 
-.user-row:focus-visible {
-  outline: 2px solid #2f5bea;
-  outline-offset: -2px;
+.sample-users-table :deep(.v-table__wrapper th:first-child) {
+  z-index: 2;
 }
 
 .tablebox {
@@ -779,11 +679,6 @@ tr:hover td {
 .full .tablebox {
   flex: 1;
   min-height: 0;
-}
-
-.full .wrap {
-  position: absolute;
-  inset: 0;
 }
 
 .full .footer {

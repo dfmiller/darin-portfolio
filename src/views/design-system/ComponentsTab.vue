@@ -5,6 +5,7 @@ const textValue = ref('')
 const emailValue = ref('')
 const numberValue = ref(5)
 const textareaValue = ref('')
+const richTextValue = ref('<p>Format <strong>rich text</strong> with the toolbar.</p>')
 const comboboxValue = ref('')
 const combinedAutocompleteValue = ref('')
 const combinedSelectValue = ref('')
@@ -177,7 +178,12 @@ const changeDemoPageSize = (itemsPerPage: number) => {
       <BaseRadioGroup v-model="radioValue" label="Preferred contact" :options="contactOptions" />
     </section>
 
-        <section class="component-section">
+    <section class="component-section">
+      <h2>Rich text</h2>
+      <BaseRichText v-model="richTextValue" placeholder="Write a formatted message…" />
+    </section>
+
+    <section class="component-section">
       <h2>Switch</h2>
       <div class="examples">
         <BaseSwitch v-model="switchValue" label="Notifications enabled" />
@@ -190,7 +196,7 @@ const changeDemoPageSize = (itemsPerPage: number) => {
       <BaseTable :columns="tableColumns" :rows="tableRows" :items-per-page="3" />
     </section>
 
-        <section class="component-section">
+    <section class="component-section">
       <h2>Tabs</h2>
       <BaseTabs v-model="activeTab">
         <template #tabs>

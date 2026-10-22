@@ -210,7 +210,6 @@ const mobileRows = computed(() => {
 .mobile-row-card {
   position: relative;
   margin-bottom: 12px;
-  padding: 16px;
   border: 1px solid rgba(var(--v-border-color), var(--v-border-opacity));
   border-radius: 10px;
   background: rgb(var(--v-theme-surface));
@@ -239,25 +238,38 @@ const mobileRows = computed(() => {
   align-items: baseline;
   justify-content: space-between;
   gap: 16px;
-  padding: 6px 0;
   border-bottom: 1px solid rgba(var(--v-border-color), var(--v-border-opacity));
+}
+
+.mobile-card-field:first-child {
+  .mobile-card-label {
+    border-top-left-radius: 10px;
+  }
 }
 
 .mobile-card-field:last-child {
   border-bottom: 0;
+
+  .mobile-card-label {
+    border-bottom-left-radius: 10px;
+  }
 }
 
 .mobile-card-label {
   flex: 0 0 35%;
+  background: rgb(var(--v-theme-surface-light));
   color: rgba(var(--v-theme-on-surface), var(--v-medium-emphasis-opacity));
   font-size: 0.8rem;
   font-weight: 600;
+  padding: 0 16px;
+  line-height: 2rem;
 }
 
 .mobile-card-value {
   min-width: 0;
   text-align: right;
   overflow-wrap: anywhere;
+  padding: 0 16px;
 }
 
 .mobile-empty {

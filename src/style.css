@@ -43,3 +43,23 @@ body {
 a {
   color: inherit;
 }
+
+/* Visually hidden, still announced by screen readers. */
+.sr-only {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  margin: -1px;
+  padding: 0;
+  overflow: hidden;
+  clip: rect(0 0 0 0);
+  white-space: nowrap;
+  border: 0;
+}
+
+/* Keep long words and wide media from forcing horizontal page scroll. */
+img,
+svg,
+video {
+  max-width: 100%;
+}

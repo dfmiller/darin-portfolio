@@ -599,7 +599,7 @@ onBeforeUnmount(() => {
 
 .sample-users-table :deep(.v-table__wrapper th) {
   background: rgb(var(--v-theme-surface-light));
-  color: rgb(var(--v-theme-on-surface));
+  color: rgb(var(--v-theme-on-surface-light));
   font-size: 0.8rem;
   letter-spacing: 0.04em;
   text-align: left;
@@ -620,18 +620,25 @@ onBeforeUnmount(() => {
 .sample-users-table :deep(.v-table__wrapper td:first-child) {
   position: sticky;
   left: 0;
-  z-index: 1;
   width: 48px;
   min-width: 48px;
   max-width: 48px;
   background: rgb(var(--v-theme-surface-light));
+  color: rgb(var(--v-theme-on-surface-light));
   border-right: 1px solid rgba(var(--v-border-color), var(--v-border-opacity));
 }
 
-.sample-users-table :deep(.v-table__wrapper th:first-child),
-.sample-users-table :deep(.v-table__wrapper th:nth-child(2)),
-.sample-users-table :deep(.v-table__wrapper td:nth-child(2)) {
+.sample-users-table :deep(.v-table__wrapper td:first-child) {
+  z-index: 1;
+}
+
+/* Header cells sit above body cells; the top-left corner sits above both. */
+.sample-users-table :deep(.v-table__wrapper th) {
   z-index: 2;
+}
+
+.sample-users-table :deep(.v-table__wrapper th:first-child) {
+  z-index: 3;
 }
 
 .tablebox {
@@ -788,6 +795,7 @@ onBeforeUnmount(() => {
 
 .table-actions {
   display: flex;
+  flex-wrap: wrap;
   align-items: center;
   justify-content: space-between;
   gap: 12px;

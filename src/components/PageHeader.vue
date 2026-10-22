@@ -79,7 +79,7 @@ nav {
 
 a {
   display: inline-flex;
-  min-height: 44px;
+  min-height: 24px;
   align-items: center;
   color: inherit;
   font-size: 0.9rem;
@@ -99,7 +99,7 @@ a:hover {
   }
 
   nav {
-    gap: 0 16px;
+    gap: 8px 16px;
   }
 
   .page-header-content {

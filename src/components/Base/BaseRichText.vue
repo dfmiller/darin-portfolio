@@ -139,7 +139,12 @@ onBeforeUnmount(() => editor.value?.destroy())
 <template>
   <div class="base-rich-text">
     <div class="editor-label">{{ label }}</div>
-    <div v-if="editor && editable" class="toolbar">
+    <div
+      v-if="editor && editable"
+      class="toolbar"
+      role="toolbar"
+      :aria-label="`${label} formatting`"
+    >
       <button
         v-for="button in buttons.slice(0, 3)"
         :key="button.name"
@@ -267,6 +272,18 @@ onBeforeUnmount(() => editor.value?.destroy())
 .toolbar button:focus-visible {
   outline: 2px solid rgb(var(--v-theme-primary));
   outline-offset: 2px;
+}
+
+/* Larger touch targets on touch devices. */
+@media (pointer: coarse) {
+  .toolbar button {
+    width: 44px;
+    height: 44px;
+  }
+
+  .toolbar .toolbar-menu-button {
+    width: 56px;
+  }
 }
 
 .editor :deep(.tiptap) {

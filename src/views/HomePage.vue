@@ -66,7 +66,8 @@
             rel="noreferrer"
           >
             LinkedIn
-            <v-icon icon="mdi-arrow-top-right" size="small" />
+            <span class="sr-only">(opens in a new tab)</span>
+            <v-icon icon="mdi-arrow-top-right" size="small" aria-hidden="true" />
           </BaseButton>
         </div>
       </div>

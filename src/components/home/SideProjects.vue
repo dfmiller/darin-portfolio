@@ -7,7 +7,8 @@
       </div>
       <BaseButton :href="project.href" target="_blank" rel="noreferrer">
         View Projects
-        <v-icon icon="mdi-arrow-top-right" size="small" />
+        <span class="sr-only">(opens in a new tab)</span>
+        <v-icon icon="mdi-arrow-top-right" size="small" aria-hidden="true" />
       </BaseButton>
     </article>
   </div>

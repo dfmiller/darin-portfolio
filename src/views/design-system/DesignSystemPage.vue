@@ -54,4 +54,10 @@ const tab = computed<Tab>({
   margin: 0 auto;
   padding: 24px;
 }
+
+@media (max-width: 600px) {
+  .page-content {
+    padding: 16px;
+  }
+}
 </style>

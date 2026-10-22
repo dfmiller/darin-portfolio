@@ -1,4 +1,3 @@
-```vue
 <template>
   <v-app>
     <v-layout class="app-shell">
@@ -53,7 +52,7 @@ const desktopExpanded = ref(
 )
 
 const isDark = computed(() => theme.global.current.value.dark)
-const pageTitle = computed(() => String(route.meta.title ?? ''))
+const pageTitle = computed(() => String(route.meta.title ?? 'Home'))
 const pageSubtitle = computed(() => String(route.meta.subtitle ?? ''))
 
 watch(
@@ -159,4 +158,3 @@ onMounted(() => {
   }
 }
 </style>
-```

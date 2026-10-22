@@ -594,11 +594,11 @@ onBeforeUnmount(() => {
 }
 
 .sample-users-table :deep(.v-table__wrapper) {
-  scrollbar-color: rgb(var(--v-theme-on-surface-variant)) rgb(var(--v-theme-surface-variant));
+  scrollbar-color: rgb(var(--v-theme-on-surface-light)) rgb(var(--v-theme-surface-light));
 }
 
 .sample-users-table :deep(.v-table__wrapper th) {
-  background: rgb(var(--v-theme-surface-variant));
+  background: rgb(var(--v-theme-surface-light));
   color: rgb(var(--v-theme-on-surface));
   font-size: 0.8rem;
   letter-spacing: 0.04em;
@@ -624,7 +624,7 @@ onBeforeUnmount(() => {
   width: 48px;
   min-width: 48px;
   max-width: 48px;
-  background: rgb(var(--v-theme-surface-variant));
+  background: rgb(var(--v-theme-surface-light));
   border-right: 1px solid rgba(var(--v-border-color), var(--v-border-opacity));
 }
 

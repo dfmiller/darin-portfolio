@@ -175,6 +175,15 @@ const mobileRows = computed(() => {
 </template>
 
 <style scoped>
+
+:deep(.v-table.v-table--fixed-header > .v-table__wrapper > table > thead > tr > th),
+:deep(thead tr th) {
+  background: rgb(var(--v-theme-surface-light));
+  color: rgb(var(--v-theme-on-surface));
+  font-size: 0.8rem;
+  letter-spacing: 0.04em;
+}
+
 .table-toolbar {
   display: flex;
   align-items: center;

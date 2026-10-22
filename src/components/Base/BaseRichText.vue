@@ -227,8 +227,8 @@ onBeforeUnmount(() => editor.value?.destroy())
   gap: 4px;
   padding: 6px;
   border-bottom: 1px solid rgba(var(--v-border-color), var(--v-border-opacity));
-  background: rgb(var(--v-theme-surface-variant));
-  color: rgb(var(--v-theme-on-surface-variant));
+  background: rgb(var(--v-theme-surface-light));
+  color: rgb(var(--v-theme-on-surface-light));
 }
 
 .toolbar button {
@@ -324,8 +324,8 @@ onBeforeUnmount(() => editor.value?.destroy())
 }
 
 .editor :deep(.tiptap pre) {
-  background: rgb(var(--v-theme-surface-variant));
-  color: rgb(var(--v-theme-on-surface-variant));
+  background: rgb(var(--v-theme-surface-light));
+  color: rgb(var(--v-theme-on-surface-light));
   padding: 10px 12px;
   border-radius: 6px;
   overflow-x: auto;

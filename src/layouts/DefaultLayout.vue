@@ -57,11 +57,13 @@ const pageSubtitle = computed(() => String(route.meta.subtitle ?? ''))
 
 watch(
   () => route.path,
-  () => {
+  async () => {
     document.title = pageTitle.value === 'Home'
       ? 'Darin F Miller - Senior Software Engineer'
       : `${pageTitle.value} | Darin F Miller`
     mobileMenuOpen.value = false
+    await nextTick()
+    pageScroll.value?.scrollTo({ top: 0, behavior: 'instant' })
   },
   { immediate: true },
 )

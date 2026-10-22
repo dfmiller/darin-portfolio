@@ -15,14 +15,25 @@
         Fullstack engineer specializing in design systems, responsive web applications, and maintainable interfaces. I work across product, design, and engineering to turn requirements into reliable experiences.
       </p>
 
-      <BaseButton
-        color="primary"
-        size="large"
-        href="#work"
-        append-icon="mdi-arrow-down"
-      >
-        View Selected Work
-      </BaseButton>
+      <div class="hero-cta">
+        <BaseButton
+          color="primary"
+          size="large"
+          href="#work"
+          append-icon="mdi-arrow-down"
+        >
+          View Selected Work
+        </BaseButton>
+
+        <BaseButton
+          variant="secondary"
+          size="large"
+          to="/design-systems"
+          append-icon="mdi-arrow-right"
+        >
+          See My Component Library
+        </BaseButton>
+      </div>
     </div>
 
     <div class="hero-decoration" aria-hidden="true">
@@ -86,6 +97,13 @@
 .hero-decoration :deep(.v-icon) {
   font-size: 100px;
   color: white;
+}
+
+.hero-cta {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: space-between;
+  gap: 12px;
 }
 
 @media (max-width: 700px) {

@@ -15,14 +15,14 @@
         Fullstack engineer specializing in design systems, responsive web applications, and maintainable interfaces. I work across product, design, and engineering to turn requirements into reliable experiences.
       </p>
 
-      <v-btn
+      <BaseButton
         color="primary"
         size="large"
         href="#work"
         append-icon="mdi-arrow-down"
       >
         View Selected Work
-      </v-btn>
+      </BaseButton>
     </div>
 
     <div class="hero-decoration" aria-hidden="true">

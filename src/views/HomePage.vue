@@ -7,14 +7,14 @@
     />
 
     <section id="work">
-      <v-container class="wrap">
+      <div class="wrap">
         <SectionHeading title="Selected Work" />
         <CaseStudy />
-      </v-container>
+      </div>
     </section>
 
     <section id="strengths">
-      <v-container class="wrap">
+      <div class="wrap">
         <SectionHeading title="What I Bring" />
 
         <div class="card-grid">
@@ -24,52 +24,53 @@
             <p>{{ item.description }}</p>
           </article>
         </div>
-      </v-container>
+      </div>
     </section>
 
     <section id="skills">
-      <v-container class="wrap">
+      <div class="wrap">
         <SectionHeading
           title="Technical Toolkit"
           description="Technologies and practices represented in my professional experience."
         />
         <SkillList :skills="skills" />
-      </v-container>
+      </div>
     </section>
 
     <section id="experience">
-      <v-container class="wrap">
+      <div class="wrap">
         <SectionHeading title="Experience" />
         <ExperienceTimeline :experience="experience" />
-      </v-container>
+      </div>
     </section>
 
     <section id="side-projects">
-        <v-container class="wrap">
-          <SectionHeading title="Personal Projects" />
-          <SideProjects />
-        </v-container>
-      </section>
+      <div class="wrap">
+        <SectionHeading title="Personal Projects" />
+        <SideProjects />
+      </div>
+    </section>
 
-      <section id="contact">
-        <v-container class="wrap">
-          <SectionHeading
-            title="Let's Talk"
+    <section id="contact">
+      <div class="wrap">
+        <SectionHeading
+          title="Let's Talk"
             description="Interested in building maintainable front-end systems, improving product experiences, or untangling complicated interfaces?"
           />
 
-          <div class="actions">
-            <v-btn
-              class="text-none"
-              href="https://www.linkedin.com/in/darinfmiller"
-              target="_blank"
-              rel="noreferrer"
-            >
-              LinkedIn
-            </v-btn>
-          </div>
-        </v-container>
-      </section>
+        <div class="actions">
+          <BaseButton
+            class="text-none"
+            href="https://www.linkedin.com/in/darinfmiller"
+            target="_blank"
+            rel="noreferrer"
+          >
+            LinkedIn
+            <v-icon icon="mdi-arrow-top-right" size="small" />
+          </BaseButton>
+        </div>
+      </div>
+    </section>
 
   </div>
 </template>
@@ -302,12 +303,8 @@ const pageSections = [
 }
 
 @media (max-width: 760px) {
-  .home-page :deep(.wrap) {
-    width: min(var(--max), calc(100% - 32px));
-  }
-
   .home-page :deep(section:not(.hero)) {
-    padding: 94px 0 60px;
+    padding: 32px 0 48px;
   }
 
   .home-page :deep(.card-grid),

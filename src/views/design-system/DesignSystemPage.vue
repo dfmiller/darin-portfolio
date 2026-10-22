@@ -3,9 +3,9 @@
   <div class="page-content">
     <BaseTabs v-model="tab" in-page-header>
       <template #tabs>
-        <v-tab value="components">Components</v-tab>
-        <v-tab value="sample">Sample Use</v-tab>
-        <v-tab value="info">Info</v-tab>
+        <v-tab v-for="tab in tabs" :key="tab" class="text-none" :value="tab">
+          {{ tab.charAt(0).toUpperCase() + tab.slice(1) }}
+        </v-tab>
       </template>
 
       <v-tabs-window-item value="components">

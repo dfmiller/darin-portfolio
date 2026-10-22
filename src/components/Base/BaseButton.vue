@@ -19,5 +19,5 @@ const v = computed(() => map[props.variant])
 </script>
 
 <template>
-  <v-btn v-bind="v" :loading="loading" :disabled="disabled"><slot /></v-btn>
+  <v-btn v-bind="v" :loading="loading" :disabled="disabled" class="text-none" rounded><slot /></v-btn>
 </template>

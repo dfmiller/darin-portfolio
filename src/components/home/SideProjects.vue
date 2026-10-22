@@ -5,10 +5,10 @@
         <h3>{{ project.title }}</h3>
         <p>{{ project.description }}</p>
       </div>
-      <a class="project-cta" :href="project.href" target="_blank" rel="noreferrer">
+      <BaseButton :href="project.href" target="_blank" rel="noreferrer">
         View Projects
         <v-icon icon="mdi-arrow-top-right" size="small" />
-      </a>
+      </BaseButton>
     </article>
   </div>
 </template>

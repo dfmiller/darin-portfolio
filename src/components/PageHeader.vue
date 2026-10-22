@@ -46,6 +46,7 @@ defineProps<{
   align-items: center;
   justify-content: space-between;
   gap: 24px;
+  width: 100%;
 }
 
 .page-header-title {
@@ -98,7 +99,7 @@ a:hover {
   }
 
   nav {
-    gap: 16px;
+    gap: 0 16px;
   }
 
   .page-header-content {

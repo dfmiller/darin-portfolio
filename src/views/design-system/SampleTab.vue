@@ -1,9 +1,11 @@
 <template>
   <div class="comments-table" :class="{ full }">
-    <h2>Users</h2>
+    <div v-if="!full" class="table-intro">
+      <h2>Users</h2>
 
-    <p>This shows reusable components in use for searching, adding, editing, and removing users.</p>
-    <p>Changes made here—including additions, edits, and deletions—are local to this table and are not saved to the source API.</p>
+      <p>This shows reusable components in use for searching, adding, editing, and removing users.</p>
+      <p>Changes made here—including additions, edits, and deletions—are local to this table and are not saved to the source API.</p>
+    </div>
 
     <div class="table-toolbar">
       <v-text-field
@@ -22,7 +24,7 @@
       <small>* Filtering and sorting apply to this page of data only, due to lack of backend support.</small>
     </div>
 
-    <div class="tablebox">
+    <div ref="tableBox" class="tablebox">
       <BaseTable
         class="sample-users-table"
         :columns="columns"
@@ -31,7 +33,7 @@
         :page="page"
         :server-items-length="total ?? currentRows.length"
         :loading="busy"
-        :height="full ? 'calc(100vh - 190px)' : 'max(240px, calc(100vh - 550px))'"
+        :height="tableHeight"
         fixed-header
         hide-default-footer
         @update:page="goTo"
@@ -93,7 +95,7 @@
       />
     </div>
 
-    <v-divider class="my-8" />
+    <v-divider v-if="!full" class="my-8" />
 
     <div class="table-actions">
       <BaseButton variant="quiet" :disabled="busy" @click="clearTable">Clear Table</BaseButton>
@@ -142,7 +144,7 @@
 </template>
 
 <script setup lang="ts">
-import { computed, onBeforeUnmount, onMounted, reactive, ref } from 'vue'
+import { computed, nextTick, onBeforeUnmount, onMounted, reactive, ref, watch } from 'vue'
 import BaseDialog from '../../components/Base/BaseDialog.vue'
 
 const API = 'https://jsonfakery.com/users/paginated'
@@ -232,6 +234,18 @@ const pendingPage = ref<number | null>(null)
 const loadError = ref('')
 const filterQuery = ref('')
 const full = ref(false)
+const tableBox = ref<HTMLElement | null>(null)
+const fullTableHeight = ref(0)
+// In full-page mode the table fills whatever space the toolbar, paging and
+// action buttons leave over; the measured height of its flexible container is used.
+const tableHeight = computed(() =>
+  full.value && fullTableHeight.value > 0
+    ? `${fullTableHeight.value}px`
+    : full.value
+      ? 'calc(100dvh - 260px)'
+      : 'max(240px, calc(100vh - 550px))',
+)
+let tableBoxObserver: ResizeObserver | null = null
 const formDialog = ref(false)
 const saving = ref(false)
 const rowToDelete = ref<UserRow | null>(null)
@@ -508,6 +522,20 @@ async function goTo(target: number): Promise<void> {
   page.value = targetPage
 }
 
+watch(full, async isFull => {
+  tableBoxObserver?.disconnect()
+  tableBoxObserver = null
+  if (!isFull) return
+
+  await nextTick()
+  if (!tableBox.value || typeof ResizeObserver === 'undefined') return
+  tableBoxObserver = new ResizeObserver(entries => {
+    const entry = entries[0]
+    if (entry) fullTableHeight.value = Math.floor(entry.contentRect.height)
+  })
+  tableBoxObserver.observe(tableBox.value)
+})
+
 onMounted(() => {
   window.addEventListener('keydown', handleKeydown)
   void goTo(1)
@@ -515,6 +543,7 @@ onMounted(() => {
 
 onBeforeUnmount(() => {
   window.removeEventListener('keydown', handleKeydown)
+  tableBoxObserver?.disconnect()
 })
 </script>
 
@@ -657,14 +686,32 @@ onBeforeUnmount(() => {
   background: rgb(var(--v-theme-background));
 }
 
-.full h1,
-.full .src {
-  display: none;
+.full .tablebox {
+  /* flex-basis 0 so the size comes from the available space, not the table. */
+  flex: 1 1 0;
+  min-height: 0;
 }
 
-.full .tablebox {
-  flex: 1;
-  min-height: 0;
+.full .table-actions {
+  margin-top: 8px;
+}
+
+/* Phones show cards instead of a table: let the page scroll and keep the exit button reachable. */
+@media (max-width: 600px) {
+  .comments-table.full {
+    overflow-y: auto;
+  }
+
+  .full .tablebox {
+    flex: 0 0 auto;
+  }
+
+  .full .fs-btn {
+    position: fixed;
+    right: 8px;
+    bottom: 8px;
+    border-radius: 8px;
+  }
 }
 
 .full .footer {

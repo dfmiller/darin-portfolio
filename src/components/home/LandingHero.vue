@@ -6,13 +6,13 @@
         variant="tonal"
         class="mb-4"
       >
-        Senior Software Engineer
+        Senior Fullstack Engineer
       </v-chip>
 
       <h1>Simplifying Complex Interfaces</h1>
 
       <p>
-        Front-end engineer specializing in design systems, responsive web applications, and maintainable interfaces. I work across product, design, and engineering to turn requirements into reliable experiences.
+        Fullstack engineer specializing in design systems, responsive web applications, and maintainable interfaces. I work across product, design, and engineering to turn requirements into reliable experiences.
       </p>
 
       <v-btn

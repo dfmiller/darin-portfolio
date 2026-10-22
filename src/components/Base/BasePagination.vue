@@ -7,6 +7,7 @@ const props = defineProps({
   total: { type: Number, required: true },
   itemsPerPage: { type: Number, required: true },
   loading: Boolean,
+  itemsPerPageReadonly: Boolean,
 })
 const emit = defineEmits(['update:modelValue', 'update:itemsPerPage'])
 const pageSizeOptions = computed(() => [...new Set([5, 10, 25, 50, 100, props.itemsPerPage])].sort((a, b) => a - b))
@@ -33,9 +34,10 @@ const handlePageSizeSelect = (event) => {
   <div class="pagination">
     <div class="pagination-summary">
       <div class="pagination-info">{{ total }} rows</div>
-      <label class="no-wrap">
+      <div class="pagination-no-wrap">
         <span>Rows per page:</span>
         <select
+          v-if="!itemsPerPageReadonly"
           class="page-size-select"
           aria-label="Rows per page"
           :value="itemsPerPage"
@@ -46,34 +48,31 @@ const handlePageSizeSelect = (event) => {
             {{ pageSize }}
           </option>
         </select>
-      </label>
+        <span v-else class="page-size-value">{{ itemsPerPage }}</span>
+      </div>
     </div>
-    <div class="pager" aria-label="Pagination">
-      <v-icon
-        icon="mdi-chevron-double-left"
+    <nav class="pager" aria-label="Pagination">
+      <button
+        type="button"
         class="page-control"
-        role="button"
         aria-label="First page"
         title="First page"
-        :aria-disabled="isFirstPage()"
-        :tabindex="isFirstPage() ? -1 : 0"
+        :disabled="isFirstPage()"
         @click="goToPage(1)"
-        @keydown.enter.prevent="goToPage(1)"
-        @keydown.space.prevent="goToPage(1)"
-      />
-      <v-icon
-        icon="mdi-chevron-left"
+      >
+        <v-icon icon="mdi-chevron-double-left" aria-hidden="true" />
+      </button>
+      <button
+        type="button"
         class="page-control"
-        role="button"
         aria-label="Previous page"
         title="Previous page"
-        :aria-disabled="isFirstPage()"
-        :tabindex="isFirstPage() ? -1 : 0"
+        :disabled="isFirstPage()"
         @click="goToPage(modelValue - 1)"
-        @keydown.enter.prevent="goToPage(modelValue - 1)"
-        @keydown.space.prevent="goToPage(modelValue - 1)"
-      />
-      <div class="no-wrap">
+      >
+        <v-icon icon="mdi-chevron-left" aria-hidden="true" />
+      </button>
+      <div class="pagination-no-wrap">
         <select
           title="Go to page"
           aria-label="Current page"
@@ -85,33 +84,29 @@ const handlePageSizeSelect = (event) => {
             {{ pageNumber }}
           </option>
         </select>
-        <span>&nbsp;of {{ pageCount }}</span>
+        <span>of {{ pageCount }}</span>
       </div>
-      <v-icon
-        icon="mdi-chevron-right"
+      <button
+        type="button"
         class="page-control"
-        role="button"
         aria-label="Next page"
         title="Next page"
-        :aria-disabled="isLastPage()"
-        :tabindex="isLastPage() ? -1 : 0"
+        :disabled="isLastPage()"
         @click="goToPage(modelValue + 1)"
-        @keydown.enter.prevent="goToPage(modelValue + 1)"
-        @keydown.space.prevent="goToPage(modelValue + 1)"
-      />
-      <v-icon
-        icon="mdi-chevron-double-right"
+      >
+        <v-icon icon="mdi-chevron-right" aria-hidden="true" />
+      </button>
+      <button
+        type="button"
         class="page-control"
-        role="button"
         aria-label="Last page"
         title="Last page"
-        :aria-disabled="isLastPage()"
-        :tabindex="isLastPage() ? -1 : 0"
+        :disabled="isLastPage()"
         @click="goToPage(pageCount)"
-        @keydown.enter.prevent="goToPage(pageCount)"
-        @keydown.space.prevent="goToPage(pageCount)"
-      />
-    </div>
+      >
+        <v-icon icon="mdi-chevron-double-right" aria-hidden="true" />
+      </button>
+    </nav>
   </div>
 </template>
 
@@ -123,7 +118,7 @@ const handlePageSizeSelect = (event) => {
   justify-content: space-between;
   gap: 12px;
   margin-top: 14px;
-  color: #5b6272;
+  color: rgba(var(--v-theme-on-surface), var(--v-medium-emphasis-opacity));
   font-size: 0.9rem;
 }
 
@@ -149,10 +144,10 @@ const handlePageSizeSelect = (event) => {
 
 .pager select {
   padding: 6px 8px;
-  border: 1px solid #2f5bea;
+  border: 1px solid rgb(var(--v-theme-primary));
   border-radius: 6px;
-  background: #2f5bea;
-  color: #fff;
+  background: rgb(var(--v-theme-primary));
+  color: rgb(var(--v-theme-on-primary));
   font-size: 0.9rem;
   text-align: right;
   cursor: pointer;
@@ -176,7 +171,7 @@ const handlePageSizeSelect = (event) => {
 .page-size-select {
   margin-left: 4px;
   padding: 5px 8px;
-  border: 1px solid #8a92a6;
+  border: 1px solid rgba(var(--v-border-color), var(--v-border-opacity));
   border-radius: 6px;
   background: transparent;
   color: inherit;
@@ -190,17 +185,35 @@ const handlePageSizeSelect = (event) => {
 }
 
 .page-control {
-  color: #1f2430;
+  display: inline-flex;
+  min-width: 44px;
+  min-height: 44px;
+  align-items: center;
+  justify-content: center;
+  padding: 0;
+  border: 0;
+  border-radius: 4px;
+  background: transparent;
+  color: rgb(var(--v-theme-on-surface));
   cursor: pointer;
 }
 
-.page-control[aria-disabled='true'] {
+.page-control:disabled {
   opacity: 0.45;
   cursor: default;
 }
 
-.no-wrap {
+.page-control:focus-visible,
+.pager select:focus-visible,
+.page-size-select:focus-visible {
+  outline: 2px solid rgb(var(--v-theme-primary));
+  outline-offset: 2px;
+}
+.pagination-no-wrap {
   white-space: nowrap;
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
 }
 
 @media (max-width: 600px) {

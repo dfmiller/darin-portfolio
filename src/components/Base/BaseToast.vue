@@ -3,5 +3,16 @@ defineProps({ modelValue: Boolean, message: String, color: { type: String, defau
 defineEmits(['update:modelValue'])
 </script>
 <template>
-  <v-snackbar :model-value="modelValue" :timeout="3000" location="top right" :color="color" @update:model-value="$emit('update:modelValue', $event)">{{ message }}</v-snackbar>
+  <v-snackbar
+    :model-value="modelValue"
+    :timeout="3000"
+    location="top right"
+    :color="color"
+    role="status"
+    aria-live="polite"
+    aria-atomic="true"
+    @update:model-value="$emit('update:modelValue', $event)"
+  >
+    {{ message }}
+  </v-snackbar>
 </template>

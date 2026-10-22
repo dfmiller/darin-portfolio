@@ -77,6 +77,9 @@ nav {
 }
 
 a {
+  display: inline-flex;
+  min-height: 44px;
+  align-items: center;
   color: inherit;
   font-size: 0.9rem;
   text-decoration: none;

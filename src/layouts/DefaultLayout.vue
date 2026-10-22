@@ -2,8 +2,10 @@
 <template>
   <v-app>
     <v-layout class="app-shell">
+      <a class="skip-link" href="#main-content">Skip to main content</a>
       <AppHeader
         :is-dark="isDark"
+        :mobile-menu-open="mobileMenuOpen"
         @go-home="goHome"
         @toggle-mobile-menu="mobileMenuOpen = !mobileMenuOpen"
         @toggle-theme="toggleTheme"
@@ -23,7 +25,7 @@
           :subtitle="pageSubtitle"
         />
 
-        <div ref="pageScroll" class="page-scroll">
+        <div id="main-content" ref="pageScroll" class="page-scroll" tabindex="-1">
           <router-view />
         </div>
       </v-main>
@@ -53,6 +55,17 @@ const desktopExpanded = ref(
 const isDark = computed(() => theme.global.current.value.dark)
 const pageTitle = computed(() => String(route.meta.title ?? ''))
 const pageSubtitle = computed(() => String(route.meta.subtitle ?? ''))
+
+watch(
+  () => route.path,
+  () => {
+    document.title = pageTitle.value === 'Home'
+      ? 'Darin F Miller - Senior Software Engineer'
+      : `${pageTitle.value} | Darin F Miller`
+    mobileMenuOpen.value = false
+  },
+  { immediate: true },
+)
 
 function toggleTheme() {
   const nextTheme = isDark.value ? 'light' : 'dark'
@@ -91,17 +104,37 @@ onMounted(() => {
   }
 })
 
-watch(
-  () => route.fullPath,
-  () => {
-    mobileMenuOpen.value = false
-  },
-)
 </script>
 
 <style scoped>
 .app-shell {
   height: 100%;
+}
+
+.skip-link {
+  position: fixed;
+  z-index: 2000;
+  top: 8px;
+  left: 8px;
+  padding: 12px 16px;
+  transform: translateY(-160%);
+  border-radius: 4px;
+  background: rgb(var(--v-theme-surface));
+  color: rgb(var(--v-theme-on-surface));
+  box-shadow: 0 2px 8px rgb(0 0 0 / 25%);
+}
+
+.skip-link:focus {
+  transform: translateY(0);
+}
+
+.page-scroll:focus {
+  outline: none;
+}
+
+.page-scroll:focus-visible {
+  outline: 2px solid rgb(var(--v-theme-primary));
+  outline-offset: -2px;
 }
 
 .main-content {

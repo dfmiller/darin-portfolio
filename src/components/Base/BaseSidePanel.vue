@@ -1,11 +1,16 @@
 <script setup>
+import { useId } from 'vue'
 import BaseIconButton from './BaseIconButton.vue'
 defineProps({ modelValue: Boolean, title: String })
 defineEmits(['update:modelValue'])
+const titleId = useId()
 </script>
 <template>
   <v-navigation-drawer
     :model-value="modelValue"
+    role="dialog"
+    aria-modal="true"
+    :aria-labelledby="titleId"
     location="right"
     temporary
     width="420"
@@ -13,7 +18,7 @@ defineEmits(['update:modelValue'])
     @update:model-value="$emit('update:modelValue', $event)"
   >
     <div class="d-flex align-center pa-4">
-      <h2 class="text-h6">{{ title }}</h2><v-spacer />
+      <h2 :id="titleId" class="text-h6">{{ title }}</h2><v-spacer />
       <BaseIconButton icon="mdi-close" label="Close panel" @click="$emit('update:modelValue', false)" />
     </div>
     <div class="px-4"><slot /></div>

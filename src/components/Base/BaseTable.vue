@@ -12,6 +12,7 @@ const props = defineProps({
   hideDefaultFooter: Boolean,
   fixedHeader: Boolean,
   height: [Number, String],
+  rowClickable: Boolean,
 })
 const emit = defineEmits(['update:page', 'update:items-per-page', 'click:row'])
 const q = ref('')
@@ -42,6 +43,18 @@ const handlePageSizeUpdate = itemsPerPage => {
   handlePageUpdate(1)
 }
 const handleRowClick = (_event, { item }) => emit('click:row', item)
+const handleRowKeydown = (event, item) => {
+  if (event.key !== 'Enter' && event.key !== ' ') return
+  if (event.target instanceof Element && event.target.closest('button, a, input, select, textarea, [contenteditable="true"]')) return
+  event.preventDefault()
+  emit('click:row', item)
+}
+const rowProps = ({ item }) => props.rowClickable
+  ? {
+      tabindex: 0,
+      onKeydown: event => handleRowKeydown(event, item),
+    }
+  : {}
 const filteredRows = computed(() => {
   const query = q.value.trim().toLocaleLowerCase()
   if (!query) return props.rows
@@ -87,6 +100,7 @@ const tableProps = computed(() => ({
   fixedHeader: props.fixedHeader,
   height: props.height,
   page: activePage.value,
+  rowProps,
   ...(props.serverItemsLength === undefined
     ? {}
     : {
@@ -99,11 +113,6 @@ const mobileRows = computed(() => {
   const start = (activePage.value - 1) * localItemsPerPage.value
   return sortedRows.value.slice(start, start + localItemsPerPage.value)
 })
-const handleCardKeydown = (event, item) => {
-  if (event.target !== event.currentTarget || (event.key !== 'Enter' && event.key !== ' ')) return
-  event.preventDefault()
-  emit('click:row', item)
-}
 </script>
 
 <template>
@@ -120,15 +129,20 @@ const handleCardKeydown = (event, item) => {
       </component>
     </div>
     <div class="base-table-mobile">
-      <div
+      <article
         v-for="(item, index) in mobileRows"
         :key="item.id ?? item.key ?? index"
         class="mobile-row-card"
-        role="button"
-        tabindex="0"
-        @click="handleRowClick($event, { item })"
-        @keydown="handleCardKeydown($event, item)"
       >
+        <button
+          v-if="rowClickable"
+          type="button"
+          class="mobile-row-edit"
+          :aria-label="`Open row ${index + 1}`"
+          @click="emit('click:row', item)"
+        >
+          Open row
+        </button>
         <div v-for="column in columns" :key="column.key" class="mobile-card-field">
           <span class="mobile-card-label">{{ column.label || column.key }}</span>
           <span class="mobile-card-value">
@@ -142,7 +156,7 @@ const handleCardKeydown = (event, item) => {
             </slot>
           </span>
         </div>
-      </div>
+      </article>
       <div v-if="mobileRows.length === 0" class="mobile-empty">
         <slot name="no-data">No data available</slot>
       </div>
@@ -185,16 +199,28 @@ const handleCardKeydown = (event, item) => {
 }
 
 .mobile-row-card {
+  position: relative;
   margin-bottom: 12px;
   padding: 16px;
   border: 1px solid rgba(var(--v-border-color), var(--v-border-opacity));
   border-radius: 10px;
   background: rgb(var(--v-theme-surface));
   box-shadow: 0 1px 3px rgb(0 0 0 / 8%);
+}
+
+.mobile-row-edit {
+  min-height: 44px;
+  margin: 0 0 8px;
+  padding: 8px 12px;
+  border: 1px solid rgba(var(--v-border-color), var(--v-border-opacity));
+  border-radius: 6px;
+  background: rgb(var(--v-theme-surface));
+  color: rgb(var(--v-theme-primary));
+  font: inherit;
   cursor: pointer;
 }
 
-.mobile-row-card:focus-visible {
+.mobile-row-edit:focus-visible {
   outline: 2px solid rgb(var(--v-theme-primary));
   outline-offset: 2px;
 }

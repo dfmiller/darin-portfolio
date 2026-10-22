@@ -18,7 +18,7 @@ const selectedTab = computed({
 </script>
 
 <template>
-  <Teleport v-if="inPageHeader && !hideTabs" to="#page-header-tabs">
+  <Teleport v-if="inPageHeader && !hideTabs" to="#page-header-tabs" defer>
     <v-tabs v-model="selectedTab">
       <slot name="tabs" />
     </v-tabs>

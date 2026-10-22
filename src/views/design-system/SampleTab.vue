@@ -1,6 +1,6 @@
 <template>
   <div class="comments-table" :class="{ full }">
-    <h1>Users</h1>
+    <h2>Users</h2>
 
     <p>This shows reusable components in use for searching, adding, editing, and removing users.</p>
     <p>Changes made here—including additions, edits, and deletions—are local to this table and are not saved to the source API.</p>
@@ -35,7 +35,6 @@
         fixed-header
         hide-default-footer
         @update:page="goTo"
-        @click:row="openForm"
       >
         <template #item.delete="{ item }">
           <BaseIconButton
@@ -44,6 +43,13 @@
             danger
             @click.stop="requestDelete(item)"
             @keydown.stop
+          />
+        </template>
+        <template #item.edit="{ item }">
+          <BaseIconButton
+            icon="mdi-pencil-outline"
+            :label="`Edit ${item.name}`"
+            @click.stop="openForm(item)"
           />
         </template>
         <template #item.photo="{ item }">
@@ -82,8 +88,8 @@
         :total="total ?? currentRows.length"
         :items-per-page="itemsPerPage"
         :loading="busy"
+        items-per-page-readonly
         @update:model-value="goTo"
-        @update:items-per-page="changeItemsPerPage"
       />
     </div>
 
@@ -150,7 +156,7 @@ const contacts = [
   { value: 'phone', label: 'Phone' },
   { value: 'none', label: "Don't contact" },
 ]
-type ColumnKey = 'delete' | 'n' | 'photo' | 'name' | 'email' | 'role' | 'country' | 'created' | 'verified' | 'id'
+type ColumnKey = 'delete' | 'edit' | 'n' | 'photo' | 'name' | 'email' | 'role' | 'country' | 'created' | 'verified' | 'id'
 
 interface UserRow {
   id: string
@@ -213,6 +219,7 @@ const columns = [
   { key: 'verified', label: 'Verified', className: 'nw' },
   { key: 'id', label: 'ID', className: 'nw mono' },
   { key: 'delete', label: 'Delete', className: 'delete-action', sortable: false },
+  { key: 'edit', label: 'Edit', className: 'edit-action', sortable: false },
 ] satisfies readonly Column[]
 
 const dateKeys = new Set<ColumnKey>(['created', 'verified'])
@@ -254,7 +261,7 @@ const filteredRows = computed(() => {
   if (!query) return rows
 
   return rows.filter(({ row, index }) => columns.some(({ key }) => {
-    if (key === 'delete') return false
+    if (key === 'delete' || key === 'edit') return false
     const value = key === 'n'
       ? currentStart.value + index + 1
       : key === 'photo'
@@ -331,7 +338,7 @@ function formatDate(iso: string): string {
 }
 
 function display(row: UserRow, key: ColumnKey): string {
-  if (key === 'delete' || key === 'n' || key === 'photo') return ''
+  if (key === 'delete' || key === 'edit' || key === 'n' || key === 'photo') return ''
   return dateKeys.has(key)
     ? formatDate(row[key])
     : row[key]
@@ -448,17 +455,6 @@ async function loadTestData(): Promise<void> {
   await goTo(1)
 }
 
-async function changeItemsPerPage(requestedItemsPerPage: number): Promise<void> {
-  if (busy.value || requestedItemsPerPage === itemsPerPage.value) return
-  itemsPerPage.value = requestedItemsPerPage
-  cache.value = {}
-  total.value = null
-  pageCount.value = 1
-  page.value = 1
-  loadError.value = ''
-  await goTo(1)
-}
-
 async function fetchPage(pageNumber: number, requestedItemsPerPage: number): Promise<ApiPage> {
   for (let attempt = 1; ; attempt += 1) {
     try {
@@ -525,11 +521,11 @@ onBeforeUnmount(() => {
 <style scoped>
 .comments-table {
   position: relative;
-  color: #1f2430;
+  color: rgb(var(--v-theme-on-surface));
   font-family: system-ui, sans-serif;
 }
 
-.comments-table h1 {
+.comments-table h2 {
   margin: 0 0 4px;
   font-size: 1.4rem;
   line-height: 1.3;
@@ -537,13 +533,13 @@ onBeforeUnmount(() => {
 
 .src {
   margin: 0 0 12px;
-  color: #5b6272;
+  color: rgba(var(--v-theme-on-surface), var(--v-medium-emphasis-opacity));
   font-size: 0.85rem;
 }
 
 .local-data-note {
   margin: 0 0 12px;
-  color: #5b6272;
+  color: rgba(var(--v-theme-on-surface), var(--v-medium-emphasis-opacity));
   font-size: 0.85rem;
 }
 
@@ -570,7 +566,7 @@ onBeforeUnmount(() => {
 
 .table-filter-note {
   margin: 0;
-  color: #5b6272;
+  color: rgba(var(--v-theme-on-surface), var(--v-medium-emphasis-opacity));
   font-size: 0.75rem;
 }
 
@@ -592,37 +588,18 @@ onBeforeUnmount(() => {
   --v-table-header-height: 38px;
 
   border-radius: 10px;
-  background: #fff;
+  background: rgb(var(--v-theme-surface));
   box-shadow: 0 1px 3px rgb(0 0 0 / 10%);
-  color: #1f2430;
+  color: rgb(var(--v-theme-on-surface));
 }
 
 .sample-users-table :deep(.v-table__wrapper) {
-  scrollbar-color: #8a92a6 #e6e8ee;
-}
-
-.sample-users-table :deep(.v-table__wrapper)::-webkit-scrollbar {
-  width: 14px;
-  height: 14px;
-}
-
-.sample-users-table :deep(.v-table__wrapper)::-webkit-scrollbar-track {
-  background: #e6e8ee;
-}
-
-.sample-users-table :deep(.v-table__wrapper)::-webkit-scrollbar-thumb {
-  border: 3px solid #e6e8ee;
-  border-radius: 7px;
-  background: #8a92a6;
-}
-
-.sample-users-table :deep(.v-table__wrapper)::-webkit-scrollbar-corner {
-  background: #e6e8ee;
+  scrollbar-color: rgb(var(--v-theme-on-surface-variant)) rgb(var(--v-theme-surface-variant));
 }
 
 .sample-users-table :deep(.v-table__wrapper th) {
-  background: #eef0f5;
-  color: #1f2430;
+  background: rgb(var(--v-theme-surface-variant));
+  color: rgb(var(--v-theme-on-surface));
   font-size: 0.8rem;
   letter-spacing: 0.04em;
   text-align: left;
@@ -632,11 +609,11 @@ onBeforeUnmount(() => {
 
 .sample-users-table :deep(.v-table__wrapper td),
 .sample-users-table :deep(.v-table__wrapper th) {
-  border-bottom: 1px solid #e6e8ee;
+  border-bottom: 1px solid rgba(var(--v-border-color), var(--v-border-opacity));
 }
 
 .sample-users-table :deep(.v-table__wrapper tbody tr:hover) {
-  background: #fafbfd;
+  background: rgba(var(--v-theme-on-surface), 0.04);
 }
 
 .sample-users-table :deep(.v-table__wrapper th:first-child),
@@ -647,11 +624,13 @@ onBeforeUnmount(() => {
   width: 48px;
   min-width: 48px;
   max-width: 48px;
-  background: #eef0f5;
-  border-right: 1px solid #e6e8ee;
+  background: rgb(var(--v-theme-surface-variant));
+  border-right: 1px solid rgba(var(--v-border-color), var(--v-border-opacity));
 }
 
-.sample-users-table :deep(.v-table__wrapper th:first-child) {
+.sample-users-table :deep(.v-table__wrapper th:first-child),
+.sample-users-table :deep(.v-table__wrapper th:nth-child(2)),
+.sample-users-table :deep(.v-table__wrapper td:nth-child(2)) {
   z-index: 2;
 }
 
@@ -668,7 +647,7 @@ onBeforeUnmount(() => {
   flex-direction: column;
   padding: 8px;
   overflow: hidden;
-  background: #f5f6f8;
+  background: rgb(var(--v-theme-background));
 }
 
 .full h1,
@@ -691,28 +670,28 @@ onBeforeUnmount(() => {
   right: 0;
   bottom: 0;
   display: flex;
-  width: 14px;
-  height: 14px;
+  width: 32px;
+  height: 32px;
   align-items: center;
   justify-content: center;
   margin: 0;
   padding: 0;
   border: 0;
   border-radius: 0 0 10px;
-  background: #8a92a6;
-  color: #fff;
+  background: rgb(var(--v-theme-primary));
+  color: rgb(var(--v-theme-on-primary));
   cursor: pointer;
 }
 
 .fs-btn:hover,
 .fs-btn:focus-visible {
-  outline: none;
-  background: #2f5bea;
+  outline: 2px solid rgb(var(--v-theme-on-surface));
+  outline-offset: 2px;
 }
 
 .fs-btn::before {
   position: absolute;
-  inset: -10px 0 0 -10px;
+  inset: 0;
   content: '';
 }
 
@@ -803,7 +782,7 @@ onBeforeUnmount(() => {
 }
 
 .info {
-  color: #5b6272;
+  color: rgba(var(--v-theme-on-surface), var(--v-medium-emphasis-opacity));
   font-size: 0.9rem;
 }
 
@@ -822,7 +801,7 @@ onBeforeUnmount(() => {
 
 .form-note {
   margin: 0 0 12px;
-  color: #5b6272;
+  color: rgba(var(--v-theme-on-surface), var(--v-medium-emphasis-opacity));
   font-size: 0.85rem;
 }
 </style>

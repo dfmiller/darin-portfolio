@@ -7,11 +7,13 @@ import Placeholder from '@tiptap/extension-placeholder'
 const props = withDefaults(
   defineProps<{
     modelValue?: string
+    label?: string
     placeholder?: string
     editable?: boolean
   }>(),
   {
     modelValue: '',
+    label: 'Rich text editor',
     placeholder: 'Start typing…',
     editable: true,
   }
@@ -101,6 +103,12 @@ const buttons: ToolbarButton[] = [
 const editor = useEditor({
   content: props.modelValue,
   editable: props.editable,
+  editorProps: {
+    attributes: {
+      'aria-label': props.label,
+      'aria-multiline': 'true',
+    },
+  },
   extensions: [
     StarterKit,
     Placeholder.configure({ placeholder: props.placeholder }),
@@ -130,6 +138,7 @@ onBeforeUnmount(() => editor.value?.destroy())
 
 <template>
   <div class="base-rich-text">
+    <div class="editor-label">{{ label }}</div>
     <div v-if="editor && editable" class="toolbar">
       <button
         v-for="button in buttons.slice(0, 3)"
@@ -197,21 +206,31 @@ onBeforeUnmount(() => editor.value?.destroy())
 
 <style scoped>
 .base-rich-text {
-  border: 1px solid #d1d5db;
+  border: 1px solid rgba(var(--v-border-color), var(--v-border-opacity));
   border-radius: 8px;
   overflow: hidden;
-  background: #fff;
+  background: rgb(var(--v-theme-surface));
+  color: rgb(var(--v-theme-on-surface));
 }
- 
+
+.editor-label {
+  display: block;
+  padding: 8px 12px 0;
+  color: rgb(var(--v-theme-on-surface));
+  font-size: 0.875rem;
+  font-weight: 600;
+}
+
 .toolbar {
   display: flex;
   flex-wrap: wrap;
   gap: 4px;
   padding: 6px;
-  border-bottom: 1px solid #e5e7eb;
-  background: #f9fafb;
+  border-bottom: 1px solid rgba(var(--v-border-color), var(--v-border-opacity));
+  background: rgb(var(--v-theme-surface-variant));
+  color: rgb(var(--v-theme-on-surface-variant));
 }
- 
+
 .toolbar button {
   display: inline-flex;
   width: 32px;
@@ -222,6 +241,7 @@ onBeforeUnmount(() => editor.value?.destroy())
   border: 1px solid transparent;
   border-radius: 4px;
   background: transparent;
+  color: inherit;
   cursor: pointer;
 }
 
@@ -230,33 +250,43 @@ onBeforeUnmount(() => editor.value?.destroy())
 }
 
 .toolbar button:hover:not(:disabled) {
-  background: #e5e7eb;
+  background: rgba(var(--v-theme-on-surface), 0.08);
 }
- 
+
 .toolbar button.active {
-  background: #e0e7ff;
-  border-color: #a5b4fc;
+  background: rgb(var(--v-theme-primary));
+  border-color: rgb(var(--v-theme-primary));
+  color: rgb(var(--v-theme-on-primary));
 }
- 
+
 .toolbar button:disabled {
   opacity: 0.4;
   cursor: not-allowed;
 }
- 
+
+.toolbar button:focus-visible {
+  outline: 2px solid rgb(var(--v-theme-primary));
+  outline-offset: 2px;
+}
+
 .editor :deep(.tiptap) {
   min-height: 150px;
   padding: 12px;
   outline: none;
 }
- 
+
+.editor :deep(.tiptap:focus-visible) {
+  box-shadow: inset 0 0 0 2px rgb(var(--v-theme-primary));
+}
+
 .editor :deep(.tiptap p.is-editor-empty:first-child::before) {
   content: attr(data-placeholder);
   float: left;
   height: 0;
-  color: #9ca3af;
+  color: rgba(var(--v-theme-on-surface), var(--v-disabled-opacity));
   pointer-events: none;
 }
- 
+
 .editor :deep(.tiptap ul),
 .editor :deep(.tiptap ol) {
   margin: 0.5em 0;
@@ -287,15 +317,15 @@ onBeforeUnmount(() => editor.value?.destroy())
 }
  
 .editor :deep(.tiptap blockquote) {
-  border-left: 3px solid #d1d5db;
+  border-left: 3px solid rgba(var(--v-border-color), var(--v-border-opacity));
   margin-left: 0;
   padding-left: 12px;
-  color: #4b5563;
+  color: rgba(var(--v-theme-on-surface), var(--v-medium-emphasis-opacity));
 }
- 
+
 .editor :deep(.tiptap pre) {
-  background: #111827;
-  color: #f9fafb;
+  background: rgb(var(--v-theme-surface-variant));
+  color: rgb(var(--v-theme-on-surface-variant));
   padding: 10px 12px;
   border-radius: 6px;
   overflow-x: auto;

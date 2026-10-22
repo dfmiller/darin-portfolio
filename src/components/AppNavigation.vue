@@ -1,5 +1,6 @@
 <template>
   <v-navigation-drawer
+    id="primary-navigation"
     :model-value="!mobile || mobileOpen"
     @update:model-value="emit('update:mobile-open', $event)"
     :permanent="!mobile"
@@ -10,6 +11,7 @@
     location="left"
     color="surface"
     class="app-navigation"
+    aria-label="Primary navigation"
   >
     <v-list nav density="comfortable">
       <v-list-item
@@ -23,10 +25,13 @@
         link
       />
       <v-divider v-if="!mobile" class="mb-2" />
-      <v-list-item
+      <v-btn
         v-if="!mobile"
         class="mb-2"
-        :prepend-icon="expanded ? 'mdi-chevron-left' : 'mdi-chevron-right'"
+        :icon="expanded ? 'mdi-chevron-left' : 'mdi-chevron-right'"
+        :aria-label="expanded ? 'Collapse navigation' : 'Expand navigation'"
+        :aria-expanded="expanded"
+        variant="text"
         @click="emit('toggle-expanded')"
       />
     </v-list>

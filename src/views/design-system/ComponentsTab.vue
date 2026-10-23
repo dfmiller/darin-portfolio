@@ -233,7 +233,7 @@ const changeDemoPageSize = (itemsPerPage: number) => {
         <BaseTextField v-model="textValue" label="Name" hint="Enter your full name" />
         <BaseTextField v-model="emailValue" label="Email with error" error="Enter a valid email address" />
         <BaseTextField model-value="Unavailable" label="Disabled" disabled />
-        <BaseNumberField v-model="numberValue" label="Quantity" :min="0" :max="10" hint="Choose a value from 0 to 10" />
+        <BaseTextField v-model="numberValue" label="Quantity" type="number" :min="0" :max="10" hint="Choose a value from 0 to 10" />
       </div>
     </section>
 

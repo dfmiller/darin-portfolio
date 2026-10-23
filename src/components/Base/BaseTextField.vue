@@ -15,7 +15,8 @@ defineEmits(['update:modelValue'])
 </script>
 
 <template>
-  <v-text-field
+  <component
+    :is="`v-${type === 'number' ? 'number-input' : 'text-field'}`"
     :model-value="modelValue"
     :label="label"
     :type="type"

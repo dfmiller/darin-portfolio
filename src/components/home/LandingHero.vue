@@ -2,22 +2,17 @@
 <template>
   <section class="hero">
     <div class="hero-content">
-      <v-chip
-        variant="tonal"
-        class="mb-4"
-      >
-        Senior Fullstack Engineer
+      <v-chip variant="tonal" class="mb-4">
+        {{ hero.chip }}
       </v-chip>
 
-      <h1>Simplifying Complex Interfaces</h1>
+      <h1>{{ hero.headline }}</h1>
 
-      <p>
-        Fullstack engineer specializing in design systems, responsive web applications, and maintainable interfaces. I work across product, design, and engineering to turn requirements into reliable experiences.
-      </p>
+      <p>{{ hero.intro }}</p>
 
       <div class="hero-cta">
         <BaseButton
-          color="primary"
+          color="info"
           size="large"
           href="#work"
           append-icon="mdi-arrow-down"
@@ -26,12 +21,12 @@
         </BaseButton>
 
         <BaseButton
-          variant="secondary"
+          variant="primary"
           size="large"
           to="/design-systems"
           append-icon="mdi-arrow-right"
         >
-          See My Component Library
+          My Component Library
         </BaseButton>
       </div>
     </div>
@@ -41,6 +36,10 @@
     </div>
   </section>
 </template>
+
+<script setup lang="ts">
+import { hero } from '@/data/portfolio.ts'
+</script>
 
 <style scoped>
 .hero {

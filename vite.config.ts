@@ -1,6 +1,6 @@
 import { fileURLToPath, URL } from 'node:url'
 import vue from '@vitejs/plugin-vue'
-import { defineConfig } from 'vite'
+import { defineConfig } from 'vitest/config' // changed from 'vite'
 
 // https://vite.dev/config/
 export default defineConfig({
@@ -9,5 +9,11 @@ export default defineConfig({
     alias: {
       '@': fileURLToPath(new URL('./src', import.meta.url)),
     },
+  },
+  test: {
+    environment: 'jsdom',
+    globals: true,
+    server: { deps: { inline: ['vuetify'] } },
+    setupFiles: ['./src/test/setup.ts'],
   },
 })

@@ -45,6 +45,6 @@ const selectDate = (value) => {
         @click:clear.stop="emit('update:modelValue', '')"
       />
     </template>
-    <v-date-picker :model-value="modelValue" @update:model-value="selectDate" />
+    <v-date-picker :model-value="modelValue" color="primary" show-adjacent-months @update:model-value="selectDate" />
   </v-menu>
 </template>

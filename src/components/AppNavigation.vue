@@ -58,7 +58,7 @@ const mobile = computed(() => !mdAndUp.value)
 const items = [
   { title: 'Profile', icon: 'mdi-card-account-details-outline', to: '/' },
   { title: 'Reusable Components', icon: 'mdi-pencil-ruler-outline', to: '/design-systems' },
-  //{ title: 'Settings', icon: 'mdi-cog-outline', to: '/settings' },
+  { title: 'Custom Checkout', icon: 'mdi-cart-outline', to: '/checkout' },
 ]
 </script>
 

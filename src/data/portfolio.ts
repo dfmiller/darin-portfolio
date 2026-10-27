@@ -3,6 +3,10 @@ export interface ExperienceItem {
   title: string
   company: string
   description: string
+  sample?: {
+    label: string
+    href: string
+  }
 }
 
 export interface StrengthItem {
@@ -58,6 +62,10 @@ export const experience: ExperienceItem[] = [
     company: 'Intelvio',
     description:
       'Laravel 11 and Vue admin platform for managing in-person and online classes, plus customer checkout flows. Developed features, fixed bugs, extended the design system and built pages demonstrating its use, and worked on upgrading the Vue 2 front end to Vue 3. Used AI-assisted tools daily for debugging, prototyping, and refactoring.',
+    sample: {
+        label: 'View screenshots of the checkout',
+        href: '/checkout',
+      }
   },
   {
     dates: 'Feb 2022 – Sep 2025',
@@ -132,6 +140,10 @@ export interface CaseStudySection {
   label: string
   heading: string
   paragraphs: string[]
+  sample?: {
+    label: string
+    href: string
+  }
 }
 
 export interface CaseStudy {
@@ -158,6 +170,10 @@ export const caseStudies: CaseStudy[] = [
           'I integrated Vue into the Blade-based pages so they could use the same navigation experience, bringing the different parts of the application closer to a shared front-end architecture.',
           'I also updated the design system and added reusable components, and worked to unify course signup and checkout across multiple brands where users could enter the purchasing flow.',
         ],
+        sample: {
+          label: 'View screenshots of the checkout',
+          href: '/checkout',
+        }
       },
     ],
     tech: [

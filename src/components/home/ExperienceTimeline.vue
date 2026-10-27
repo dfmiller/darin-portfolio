@@ -9,6 +9,11 @@
       <div>
         <strong>{{ role.company }}</strong>
         <span>{{ role.description }}</span>
+        <p v-if="role.sample">
+          <a :href="role.sample.href" target="_blank" rel="noopener">
+            {{ role.sample.label }}
+          </a>
+        </p>
       </div>
     </article>
   </div>
@@ -20,6 +25,10 @@ interface ExperienceItem {
   title: string
   company: string
   description: string
+  sample?: {
+    label: string
+    href: string
+  }
 }
 
 defineProps<{ experience: ExperienceItem[] }>()

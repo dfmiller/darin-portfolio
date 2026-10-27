@@ -4,7 +4,7 @@ import { createRouter, createWebHistory } from 'vue-router'
 import HomePage from '../views/HomePage.vue'
 import DesignSystemPage from '../views/design-system/DesignSystemPage.vue'
 import NotFoundPage from '../views/NotFoundPage.vue'
-import SettingsPage from '../views/SettingsPage.vue'
+import CheckoutPage from '../views/CheckoutPage.vue'
 
 const routes = [
   {
@@ -20,10 +20,10 @@ const routes = [
     meta: { title: 'Reusable Components' },
   },
   {
-    path: '/settings',
-    name: 'Settings',
-    component: SettingsPage,
-    meta: { title: 'Settings' },
+    path: '/checkout',
+    name: 'Custom Checkout',
+    component: CheckoutPage,
+    meta: { title: 'Custom Checkout' },
   },
   {
     path: '/:pathMatch(.*)*',

@@ -303,6 +303,12 @@ const pageSections = [
   color: rgba(var(--v-theme-on-background), var(--v-medium-emphasis-opacity));
 }
 
+.home-page :deep(.case-copy a) {
+  color: var(--accent);
+  text-decoration: underline;
+  text-underline-offset: 2px;
+}
+
 @media (max-width: 760px) {
   .home-page :deep(section:not(.hero)) {
     padding: 32px 0 48px;

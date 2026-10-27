@@ -29,6 +29,11 @@ import { caseStudies } from '@/data/portfolio'
           <p v-for="(paragraph, i) in section.paragraphs" :key="i">
             {{ paragraph }}
           </p>
+          <p v-if="section.sample">
+            <a :href="section.sample.href" target="_blank" rel="noopener">
+              {{ section.sample.label }}
+            </a>
+          </p>
         </div>
       </div>
 

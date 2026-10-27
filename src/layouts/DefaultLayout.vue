@@ -19,7 +19,7 @@
 
       <v-main class="main-content">
         <PageHeader
-          v-if="route.path !== '/'"
+          v-if="route.path !== '/' && route.name !== 'NotFound'"
           :title="pageTitle"
           :subtitle="pageSubtitle"
         />

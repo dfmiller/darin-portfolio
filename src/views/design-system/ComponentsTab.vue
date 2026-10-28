@@ -91,11 +91,11 @@ const changeDemoPageSize = (itemsPerPage: number) => {
       <h2>Avatars</h2>
       <div class="examples">
         <BaseAvatar :size="32" alt="Small avatar" src="https://testingbot.com/free-online-tools/random-avatar/32" />
-        <BaseAvatar :size="32" alt="Small avatar" />
+        <BaseAvatar :size="32" alt="Small avatar" initials="AB" src="bad source" />
         <BaseAvatar :size="48" alt="Medium avatar" src="https://testingbot.com/free-online-tools/random-avatar/48" />
-        <BaseAvatar :size="48" alt="Medium avatar" />
+        <BaseAvatar :size="48" alt="Medium avatar" initials="C" src="bad source" />
         <BaseAvatar :size="64" alt="Large avatar" src="https://testingbot.com/free-online-tools/random-avatar/64" />
-        <BaseAvatar :size="64" alt="Large avatar" />
+        <BaseAvatar :size="64" alt="Large avatar" initials="DEF" src="bad source" />
       </div>
     </section>
 

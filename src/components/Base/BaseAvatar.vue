@@ -15,7 +15,6 @@ const props = withDefaults(defineProps<{
 
 const hasError = ref(false)
 
-// Reset error state if the user changes the src prop
 watch(() => props.src, () => {
   hasError.value = false
 })
@@ -31,6 +30,15 @@ const randomColor = computed(() => {
   const index = Math.abs(hash) % colors.length
   return colors[index]
 })
+
+const numericSize = computed(() => {
+  const parsed = typeof props.size === 'number' ? props.size : parseInt(props.size, 10)
+  return isNaN(parsed) ? 32 : parsed
+})
+
+const iconSize = computed(() => numericSize.value * 0.55)
+
+const fontSize = computed(() => `${numericSize.value * 0.4}px`)
 </script>
 
 <template>
@@ -44,8 +52,21 @@ const randomColor = computed(() => {
     />
 
     <template v-if="!src || hasError">
-      <span v-if="initials" class="text-uppercase" data-testid="avatar-initials">{{ initials }}</span>
-      <v-icon v-else icon="mdi-account" aria-hidden="true" data-testid="fallback-icon" />
+      <span 
+        v-if="initials" 
+        class="text-uppercase font-weight-medium" 
+        :style="{ fontSize }"
+        data-testid="avatar-initials"
+      >
+        {{ initials }}
+      </span>
+      <v-icon 
+        v-else 
+        icon="mdi-account" 
+        aria-hidden="true" 
+        :size="iconSize" 
+        data-testid="fallback-icon" 
+      />
     </template>
   </v-avatar>
 </template>

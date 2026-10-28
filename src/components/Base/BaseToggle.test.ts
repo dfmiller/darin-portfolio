@@ -1,10 +1,10 @@
 import { describe, it, expect } from 'vitest'
 import { mount } from '@vue/test-utils'
-import vuetify from '@/plugins/vuetify'
+//import vuetify from '@/plugins/vuetify'
 import BaseSwitch from './BaseSwitch.vue'
 import BaseCheckbox from './BaseCheckbox.vue'
 
-const global = { plugins: [vuetify] }
+//const global = { plugins: [vuetify] }
 
 describe.each([
   ['BaseSwitch', BaseSwitch],
@@ -12,7 +12,7 @@ describe.each([
 ])('%s', (_name, Component) => {
   it('renders its label', () => {
     const wrapper = mount(Component, {
-      global,
+      //global,
       props: { modelValue: false, label: 'Dark mode' },
     })
 
@@ -20,8 +20,8 @@ describe.each([
   })
 
   it('reflects the modelValue', () => {
-    const off = mount(Component, { global, props: { modelValue: false, label: 'A' } })
-    const on = mount(Component, { global, props: { modelValue: true, label: 'A' } })
+    const off = mount(Component, { props: { modelValue: false, label: 'A' } })
+    const on = mount(Component, { props: { modelValue: true, label: 'A' } })
 
     expect((off.find('input').element as HTMLInputElement).checked).toBe(false)
     expect((on.find('input').element as HTMLInputElement).checked).toBe(true)
@@ -29,7 +29,7 @@ describe.each([
 
   it('emits update:modelValue when toggled on', async () => {
     const wrapper = mount(Component, {
-      global,
+      //global,
       props: { modelValue: false, label: 'A' },
     })
     const input = wrapper.find('input')
@@ -44,7 +44,7 @@ describe.each([
 
   it('emits update:modelValue when toggled off', async () => {
     const wrapper = mount(Component, {
-      global,
+      //global,
       props: { modelValue: true, label: 'A' },
     })
     const input = wrapper.find('input')
@@ -57,7 +57,7 @@ describe.each([
 
   it('disables the input when disabled', () => {
     const wrapper = mount(Component, {
-      global,
+      //global,
       props: { modelValue: false, label: 'A', disabled: true },
     })
 

@@ -1,9 +1,6 @@
 import { describe, it, expect, beforeAll, afterEach, vi } from 'vitest'
 import { mount, flushPromises, type VueWrapper } from '@vue/test-utils'
-import vuetify from '@/plugins/vuetify'
 import BaseRichText from './BaseRichText.vue'
-
-const global = { plugins: [vuetify] }
 
 // jsdom has no layout engine; ProseMirror calls these when focusing/selecting.
 beforeAll(() => {
@@ -23,7 +20,7 @@ const wrappers: VueWrapper[] = []
 
 // The editor is created in onMounted, so wait for it before asserting.
 async function mountEditor(props: Record<string, unknown> = {}) {
-  const wrapper = mount(BaseRichText, { global, props, attachTo: document.body })
+  const wrapper = mount(BaseRichText, { props, attachTo: document.body })
   wrappers.push(wrapper)
   await flushPromises()
   return wrapper

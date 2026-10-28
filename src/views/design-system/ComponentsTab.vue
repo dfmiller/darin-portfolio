@@ -213,13 +213,10 @@ const changeDemoPageSize = (itemsPerPage: number) => {
 
     <section class="component-section">
       <h2>Tabs</h2>
-      <BaseTabs v-model="activeTab" :tabs="['overview', 'details']">
-        <v-tabs-window-item value="overview" class="tab-example">
-          Overview tab content
-        </v-tabs-window-item>
-        <v-tabs-window-item value="details" class="tab-example">
-          Details tab content
-        </v-tabs-window-item>
+      <BaseTabs 
+        v-model="activeTab"
+        :tabs="[{ title: 'Overview', value: 'overview', content: 'Overview tab content' }, { title: 'Details', value: 'details', content: 'Details tab content' }]"
+      >
       </BaseTabs>
     </section>
 
@@ -322,7 +319,7 @@ const changeDemoPageSize = (itemsPerPage: number) => {
   font-size: 0.875rem;
 }
 
-.tab-example {
+:deep(.v-tabs-window) {
   padding: 16px 0;
 }
 

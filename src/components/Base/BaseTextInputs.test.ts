@@ -1,15 +1,11 @@
 import { describe, it, expect } from 'vitest'
 import { mount } from '@vue/test-utils'
-import vuetify from '@/plugins/vuetify'
 import BaseTextField from './BaseTextField.vue'
 import BaseTextarea from './BaseTextarea.vue'
-
-const global = { plugins: [vuetify] }
 
 describe('BaseTextField', () => {
   it('renders a text field with its label and value', () => {
     const wrapper = mount(BaseTextField, {
-      global,
       props: { modelValue: 'Darin', label: 'First name' },
     })
 
@@ -19,7 +15,6 @@ describe('BaseTextField', () => {
 
   it('emits update:modelValue as the user types', async () => {
     const wrapper = mount(BaseTextField, {
-      global,
       props: { modelValue: '', label: 'First name' },
     })
 
@@ -29,7 +24,7 @@ describe('BaseTextField', () => {
   })
 
   it('uses the underlined, comfortable style by default', () => {
-    const wrapper = mount(BaseTextField, { global, props: { label: 'Name' } })
+    const wrapper = mount(BaseTextField, { props: { label: 'Name' } })
     const field = wrapper.findComponent({ name: 'VTextField' })
 
     expect(field.props('variant')).toBe('underlined')
@@ -38,7 +33,6 @@ describe('BaseTextField', () => {
 
   it('shows the hint persistently', () => {
     const wrapper = mount(BaseTextField, {
-      global,
       props: { label: 'Email', hint: 'We never share it' },
     })
 
@@ -47,7 +41,6 @@ describe('BaseTextField', () => {
 
   it('shows an error message and error state', () => {
     const wrapper = mount(BaseTextField, {
-      global,
       props: { label: 'Email', error: 'Email is required' },
     })
 
@@ -56,7 +49,7 @@ describe('BaseTextField', () => {
   })
 
   it('does not render a number input for text fields', () => {
-    const wrapper = mount(BaseTextField, { global, props: { label: 'Name' } })
+    const wrapper = mount(BaseTextField, { props: { label: 'Name' } })
 
     expect(wrapper.findComponent({ name: 'VTextField' }).exists()).toBe(true)
     expect(wrapper.findComponent({ name: 'VNumberInput' }).exists()).toBe(false)
@@ -65,7 +58,6 @@ describe('BaseTextField', () => {
   describe('type="number"', () => {
     it('renders a number input instead of a text field', () => {
       const wrapper = mount(BaseTextField, {
-        global,
         props: { type: 'number', modelValue: 5, label: 'Age' },
       })
 
@@ -74,7 +66,6 @@ describe('BaseTextField', () => {
 
     it('passes min, max and step through', () => {
       const wrapper = mount(BaseTextField, {
-        global,
         props: { type: 'number', modelValue: 5, label: 'Age', min: 0, max: 120, step: 5 },
       })
       const input = wrapper.findComponent({ name: 'VNumberInput' })
@@ -86,7 +77,6 @@ describe('BaseTextField', () => {
 
     it('converts emitted values to numbers', () => {
       const wrapper = mount(BaseTextField, {
-        global,
         props: { type: 'number', modelValue: 5, label: 'Age' },
       })
 
@@ -97,7 +87,6 @@ describe('BaseTextField', () => {
 
     it('emits null when the field is cleared', () => {
       const wrapper = mount(BaseTextField, {
-        global,
         props: { type: 'number', modelValue: 5, label: 'Age' },
       })
 
@@ -111,7 +100,6 @@ describe('BaseTextField', () => {
 describe('BaseTextarea', () => {
   it('renders a textarea with its label and value', () => {
     const wrapper = mount(BaseTextarea, {
-      global,
       props: { modelValue: 'Hello', label: 'Notes' },
     })
 
@@ -121,7 +109,6 @@ describe('BaseTextarea', () => {
 
   it('emits update:modelValue as the user types', async () => {
     const wrapper = mount(BaseTextarea, {
-      global,
       props: { modelValue: '', label: 'Notes' },
     })
 
@@ -131,7 +118,7 @@ describe('BaseTextarea', () => {
   })
 
   it('defaults to 3 rows and the underlined style', () => {
-    const wrapper = mount(BaseTextarea, { global, props: { label: 'Notes' } })
+    const wrapper = mount(BaseTextarea, { props: { label: 'Notes' } })
     const field = wrapper.findComponent({ name: 'VTextarea' })
 
     expect(field.props('rows')).toBe(3)
@@ -140,7 +127,6 @@ describe('BaseTextarea', () => {
 
   it('shows the hint', () => {
     const wrapper = mount(BaseTextarea, {
-      global,
       props: { label: 'Notes', hint: 'Keep it short' },
     })
 
@@ -149,7 +135,6 @@ describe('BaseTextarea', () => {
 
   it('shows an error message instead of the hint', () => {
     const wrapper = mount(BaseTextarea, {
-      global,
       props: { label: 'Notes', hint: 'Keep it short', error: 'Too long' },
     })
 

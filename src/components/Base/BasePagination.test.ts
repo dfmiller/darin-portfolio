@@ -1,11 +1,9 @@
 import { describe, it, expect } from 'vitest'
 import { mount } from '@vue/test-utils'
-import vuetify from '@/plugins/vuetify'
 import BasePagination from './BasePagination.vue'
 
 function mountPagination(props: Record<string, unknown> = {}) {
   return mount(BasePagination, {
-    global: { plugins: [vuetify] },
     props: { modelValue: 1, pageCount: 5, total: 47, itemsPerPage: 10, ...props },
   })
 }

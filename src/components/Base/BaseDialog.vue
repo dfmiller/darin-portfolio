@@ -4,8 +4,10 @@ import BaseButton from './BaseButton.vue'
 defineProps({
   modelValue: Boolean,
   title: String,
-  confirmLabel: { type: String, default: 'Save changes' },
+  closeLabel: { type: String, default: 'Cancel' },
+  confirmLabel: { type: String, default: null },
   confirmLoading: Boolean,
+  width: { type: [Number, String], default: null },
   maxWidth: { type: [Number, String], default: 440 },
   danger: Boolean,
 })
@@ -16,6 +18,7 @@ const titleId = useId()
 <template>
   <v-dialog
     :model-value="modelValue"
+    :width="width"
     :max-width="maxWidth"
     :aria-labelledby="titleId"
     @update:model-value="$emit('update:modelValue', $event)"
@@ -25,8 +28,8 @@ const titleId = useId()
       <v-card-text class="px-6"><slot /></v-card-text>
       <v-card-actions class="px-6 pb-5">
         <v-spacer />
-        <BaseButton variant="quiet" @click="$emit('update:modelValue', false)">Cancel</BaseButton>
-        <BaseButton :variant="danger ? 'danger' : 'primary'" :loading="confirmLoading" @click="$emit('confirm')">{{ confirmLabel }}</BaseButton>
+        <BaseButton variant="quiet" @click="$emit('update:modelValue', false)">{{ closeLabel }}</BaseButton>
+        <BaseButton v-if="confirmLabel" :variant="danger ? 'danger' : 'primary'" :loading="confirmLoading" @click="$emit('confirm')">{{ confirmLabel }}</BaseButton>
       </v-card-actions>
     </v-card>
   </v-dialog>

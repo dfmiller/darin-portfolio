@@ -213,11 +213,7 @@ const changeDemoPageSize = (itemsPerPage: number) => {
 
     <section class="component-section">
       <h2>Tabs</h2>
-      <BaseTabs v-model="activeTab">
-        <template #tabs>
-          <v-tab value="overview">Overview</v-tab>
-          <v-tab value="details">Details</v-tab>
-        </template>
+      <BaseTabs v-model="activeTab" :tabs="['overview', 'details']">
         <v-tabs-window-item value="overview" class="tab-example">
           Overview tab content
         </v-tabs-window-item>

@@ -10,13 +10,7 @@
       </p>
     </div>
 
-    <BaseTabs v-model="tab" in-page-header>
-      <template #tabs>
-        <v-tab v-for="tab in tabs" :key="tab" class="text-none" :value="tab">
-          {{ tab.charAt(0).toUpperCase() + tab.slice(1) }}
-        </v-tab>
-      </template>
-
+    <BaseTabs v-model="tab" in-page-header :tabs="tabs">
       <v-tabs-window-item value="screenshots">
         <ScreenshotsTab />
       </v-tabs-window-item>

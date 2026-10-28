@@ -1,10 +1,7 @@
 import { describe, it, expect } from 'vitest'
 import { mount } from '@vue/test-utils'
-//import vuetify from '@/plugins/vuetify'
 import BaseSwitch from './BaseSwitch.vue'
 import BaseCheckbox from './BaseCheckbox.vue'
-
-//const global = { plugins: [vuetify] }
 
 describe.each([
   ['BaseSwitch', BaseSwitch],
@@ -12,7 +9,6 @@ describe.each([
 ])('%s', (_name, Component) => {
   it('renders its label', () => {
     const wrapper = mount(Component, {
-      //global,
       props: { modelValue: false, label: 'Dark mode' },
     })
 
@@ -29,7 +25,6 @@ describe.each([
 
   it('emits update:modelValue when toggled on', async () => {
     const wrapper = mount(Component, {
-      //global,
       props: { modelValue: false, label: 'A' },
     })
     const input = wrapper.find('input')
@@ -44,7 +39,6 @@ describe.each([
 
   it('emits update:modelValue when toggled off', async () => {
     const wrapper = mount(Component, {
-      //global,
       props: { modelValue: true, label: 'A' },
     })
     const input = wrapper.find('input')
@@ -57,7 +51,6 @@ describe.each([
 
   it('disables the input when disabled', () => {
     const wrapper = mount(Component, {
-      //global,
       props: { modelValue: false, label: 'A', disabled: true },
     })
 

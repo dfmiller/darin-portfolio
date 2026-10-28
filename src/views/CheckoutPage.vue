@@ -21,7 +21,7 @@
         <ScreenshotsTab />
       </v-tabs-window-item>
 
-      <v-tabs-window-item value="sample">
+      <v-tabs-window-item value="mockup">
         <CheckoutTab />
       </v-tabs-window-item>
     </BaseTabs>
@@ -34,7 +34,7 @@ import { ref } from 'vue'
 import ScreenshotsTab from '@/views/checkout/ScreenshotsTab.vue'
 import CheckoutTab from '@/views/checkout/CheckoutTab.vue'
 
-const tabs = ['screenshots', 'sample'] as const
+const tabs = ['screenshots', 'mockup'] as const
 type Tab = typeof tabs[number]
 const tab = ref<Tab>('screenshots') 
 </script>

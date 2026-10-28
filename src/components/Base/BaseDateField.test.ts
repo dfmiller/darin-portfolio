@@ -96,7 +96,7 @@ describe('BaseDateField.vue', () => {
       },
     })
 
-    expect(wrapper.text()).toContain('Oct 1 — 15, 2026')
+    expect(wrapper.text()).toContain('Oct 1 - 15, 2026')
   })
 
   it('parses dynamic min and max keywords correctly (today, yesterday, tomorrow)', () => {

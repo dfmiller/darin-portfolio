@@ -3,39 +3,40 @@
   <div class="page-content">
     <div class="intro mb-6">
       <p>
-        This is a custom checkout page built with Vue 3 and Vuetify 3. It
-        features a responsive design, form validation, and a smooth user
-        experience. Designed to funnel from multiple websites, it shows separate
-        themeing and branding options from each parent site.
+        This was a custom checkout page built with Vue 3 and Vuetify 3. It
+        featured a responsive design, form validation, and a smooth user
+        experience. Designed to funnel from multiple websites, it showed separate
+        theming and branding options from each parent site.
       </p>
     </div>
 
-    <v-container>
-      <v-carousel 
-        cycle 
-        :interval="4000"
-        show-arrows="hover" 
-      >
-        <v-carousel-item
-          v-for="(image, index) in images"
-          :key="index"
-          :src="image"
-          contain
-        ></v-carousel-item>
-      </v-carousel>
-    </v-container>
+    <BaseTabs v-model="tab" in-page-header>
+      <template #tabs>
+        <v-tab v-for="tab in tabs" :key="tab" class="text-none" :value="tab">
+          {{ tab.charAt(0).toUpperCase() + tab.slice(1) }}
+        </v-tab>
+      </template>
+
+      <v-tabs-window-item value="screenshots">
+        <ScreenshotsTab />
+      </v-tabs-window-item>
+
+      <v-tabs-window-item value="sample">
+        <CheckoutTab />
+      </v-tabs-window-item>
+    </BaseTabs>
+
   </div>
 </template>
 
 <script setup lang="ts">
-
 import { ref } from 'vue'
+import ScreenshotsTab from '@/views/checkout/ScreenshotsTab.vue'
+import CheckoutTab from '@/views/checkout/CheckoutTab.vue'
 
-const modules = import.meta.glob('@/assets/images/checkout*.png', { eager: true })
-const images = ref(
-  Object.values(modules).map((mod) => (mod as { default: string }).default)
-)
-
+const tabs = ['screenshots', 'sample'] as const
+type Tab = typeof tabs[number]
+const tab = ref<Tab>('screenshots') 
 </script>
 
 <style scoped>
@@ -46,17 +47,8 @@ const images = ref(
   padding: 24px;
 }
 
-.intro h2 {
-  margin-bottom: 6px;
-  font-size: 1.5rem;
-  font-weight: 600;
-}
-
 .intro p {
   opacity: 0.7;
 }
 
-.settings-card {
-  max-width: 720px;
-}
 </style>

@@ -25,9 +25,9 @@
 <script setup lang="ts">
 import { computed } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
-import ComponentsTab from './ComponentsTab.vue'
-import SampleTab from './SampleTab.vue'
-import InfoTab from './InfoTab.vue'
+import ComponentsTab from './design-system/ComponentsTab.vue'
+import SampleTab from './design-system/SampleTab.vue'
+import InfoTab from './design-system/InfoTab.vue'
 
 const route = useRoute()
 const router = useRouter()

@@ -9,7 +9,9 @@ const richTextValue = ref('<p>Format <strong>rich text</strong> with the toolbar
 const comboboxValue = ref('')
 const combinedAutocompleteValue = ref('')
 const combinedSelectValue = ref('')
-const dateValue = ref('')
+const pastDateValue = ref('')
+const futureDateValue = ref('')
+const dateRangeValue = ref([])
 const fileValue = ref<File | null>(null)
 const checkboxValue = ref(false)
 const switchValue = ref(true)
@@ -133,7 +135,11 @@ const changeDemoPageSize = (itemsPerPage: number) => {
 
     <section class="component-section">
       <h2>Date field</h2>
-      <BaseDateField v-model="dateValue" label="Start date" hint="Opens a date picker" />
+      <div class="examples">
+        <BaseDateField v-model="pastDateValue" label="Birthdate" max="yesterday" hint="Select a past date" />
+        <BaseDateField v-model="futureDateValue" label="Future date" min="tomorrow" hint="Select a future date" />
+        <BaseDateField v-model="dateRangeValue" label="Date range" hint="Select a start and end date" range />
+      </div>
     </section>
 
     <section class="component-section">

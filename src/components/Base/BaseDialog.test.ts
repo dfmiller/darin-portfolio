@@ -1,7 +1,6 @@
 import { mount } from '@vue/test-utils'
 import { describe, it, expect } from 'vitest'
 import BaseDialog from './BaseDialog.vue'
-import BaseButton from './BaseButton.vue'
 
 describe('BaseDialog.test.ts > BaseDialog.vue', () => {
   it('renders properly when open with a title and slot content', () => {

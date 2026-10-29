@@ -25,6 +25,7 @@ body {
 
 html {
   scroll-behavior: smooth;
+  overflow: auto !important; /* hide default scrollbars */
 }
 
 @media (prefers-reduced-motion: reduce) {

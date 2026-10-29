@@ -1,34 +1,35 @@
 
 import { createRouter, createWebHistory } from 'vue-router'
 
-import HomePage from '../views/HomePage.vue'
-import DesignSystemPage from '../views/DesignSystemPage.vue'
-import NotFoundPage from '../views/NotFoundPage.vue'
-import CheckoutPage from '../views/CheckoutPage.vue'
-
 const routes = [
   {
     path: '/',
     name: 'Home',
-    component: HomePage,
+    component: () => import('../views/HomePage.vue'),
     meta: { title: 'Home', showHero: true },
   },
   {
     path: '/design-systems',
     name: 'Reusable Components',
-    component: DesignSystemPage,
+    component: () => import('../views/DesignSystemPage.vue'),
     meta: { title: 'Reusable Components' },
   },
   {
     path: '/checkout',
     name: 'Custom Checkout',
-    component: CheckoutPage,
+    component: () => import('../views/CheckoutPage.vue'),
     meta: { title: 'Custom Checkout' },
+  },
+  {
+    path: '/infinite-scroll',
+    name: 'Infinite Scroll',
+    component: () => import('../views/InfiniteScrollPage.vue'),
+    meta: { title: 'Infinite Scroll' },
   },
   {
     path: '/:pathMatch(.*)*',
     name: 'NotFound',
-    component: NotFoundPage,
+    component: () => import('../views/NotFoundPage.vue'),
     meta: { title: 'Page Not Found' },
   },
 ]

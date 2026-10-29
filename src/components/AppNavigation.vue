@@ -59,6 +59,7 @@ const items = [
   { title: 'Profile', icon: 'mdi-card-account-details-outline', to: '/' },
   { title: 'Reusable Components', icon: 'mdi-pencil-ruler-outline', to: '/design-systems' },
   { title: 'Custom Checkout', icon: 'mdi-cart-outline', to: '/checkout' },
+  { title: 'Infinite Scroll', icon: 'mdi-infinity', to: '/infinite-scroll' },
 ]
 </script>
 

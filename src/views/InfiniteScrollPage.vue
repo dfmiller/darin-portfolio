@@ -1,5 +1,8 @@
 <template>
   <div class="products-page">
+    <Teleport to=".page-header-aside">
+      Loaded Item Count: {{ items.length }}
+    </Teleport>
     <div ref="scroller" class="products-list" @scroll.passive="onScroll">
       <v-card
         v-for="item in items"
@@ -115,7 +118,7 @@
 </template>
 
 <script setup>
-import { computed, nextTick, onBeforeUnmount, onMounted, ref, watch } from 'vue'
+import { computed, nextTick, onBeforeUnmount, onMounted, ref, Teleport, watch } from 'vue'
 
 const API_URL = 'https://dummyjson.com/products'
 const PAGE_SIZE = 10
@@ -300,6 +303,17 @@ function checkEdges() {
   } else if (nearTop && firstPage > 1) {
     loadPrevious()
   }
+
+  // Pruning logic: if we have more pages loaded than allowed, trim them
+  if (lastPage - firstPage >= MAX_LOADED_PAGES) {
+    if (el.scrollTop < SCROLL_THRESHOLD * 2) {
+      // User is near the top, safe to prune from the bottom
+      pruneBottom()
+    } else if (el.scrollHeight - el.scrollTop <= el.clientHeight + SCROLL_THRESHOLD * 2) {
+      // User is near the bottom, safe to prune from the top
+      pruneTop()
+    }
+  }
 }
 
 // The current page is the page of the card at the top of the viewport.
@@ -328,6 +342,42 @@ onMounted(() => {
 onBeforeUnmount(() => {
   window.removeEventListener('hashchange', onHashChange)
 })
+
+
+const MAX_LOADED_PAGES = 3 // Keep at most 3 pages in DOM simultaneously to save memory
+
+async function pruneTop() {
+  const el = scroller.value
+  const cards = Array.from(el.querySelectorAll('.product-card'))
+  
+  // Find cards belonging to the first page
+  const firstPageCards = cards.filter(c => Number(c.dataset.page) === firstPage)
+  if (firstPageCards.length === 0) return
+
+  // Calculate height of the removed section to preserve scroll position
+  const heightBefore = el.scrollHeight
+  const topCardBottom = firstPageCards[firstPageCards.length - 1].getBoundingClientRect().bottom
+  const scrollTopBefore = el.scrollTop
+
+  // Remove items from state
+  items.value = items.value.filter(item => item.page > firstPage)
+  firstPage++
+
+  await nextTick()
+  // Adjust scroll position so content doesn't jump
+  el.scrollTop = scrollTopBefore - (heightBefore - el.scrollHeight)
+}
+
+async function pruneBottom() {
+  const el = scroller.value
+  
+  // Remove items belonging to the last page from state
+  items.value = items.value.filter(item => item.page < lastPage)
+  lastPage--
+
+  await nextTick()
+}
+
 </script>
 
 <style scoped>

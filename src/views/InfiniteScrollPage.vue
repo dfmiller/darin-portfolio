@@ -1,7 +1,7 @@
 <template>
   <div class="products-page">
     <Teleport to=".page-header-aside">
-      Loaded Item Count: {{ items.length }}
+      Products in DOM: {{ items.length }}
     </Teleport>
     <div ref="scroller" class="products-list" @scroll.passive="onScroll">
       <v-card

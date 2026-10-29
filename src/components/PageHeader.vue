@@ -111,8 +111,7 @@ a:hover {
   }
 
   .page-header-content {
-    align-items: flex-start;
-    flex-direction: column;
+    flex-wrap: wrap;
     gap: 8px;
   }
 }

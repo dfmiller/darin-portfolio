@@ -24,7 +24,6 @@
 </template>
 
 <script setup lang="ts">
-import { ref } from 'vue'
 import ScreenshotsTab from '@/views/checkout/ScreenshotsTab.vue'
 import CheckoutTab from '@/views/checkout/CheckoutTab.vue'
 

@@ -28,9 +28,26 @@ import { ref } from 'vue'
 import ScreenshotsTab from '@/views/checkout/ScreenshotsTab.vue'
 import CheckoutTab from '@/views/checkout/CheckoutTab.vue'
 
+
+import { computed } from 'vue'
+import { useRoute, useRouter } from 'vue-router'
+
+const route = useRoute()
+const router = useRouter()
 const tabs = ['screenshots', 'mockup'] as const
+
 type Tab = typeof tabs[number]
-const tab = ref<Tab>('screenshots') 
+
+const tab = computed<Tab>({
+  get: () => {
+    const hashTab = route.hash.slice(1)
+    return tabs.find(candidate => candidate === hashTab) ?? 'screenshots'
+  },
+  set: value => {
+    const hash = `#${value}`
+    if (route.hash !== hash) void router.push({ hash })
+  },
+})
 </script>
 
 <style scoped>

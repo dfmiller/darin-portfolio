@@ -9,6 +9,7 @@ const props = defineProps({
   label: String,
   hint: String,
   error: String,
+  rules: { type: [Array, Function], default: () => [] },
   variant: { type: String, default: 'underlined' },
   range: { type: Boolean, default: false },
   allowedDates: { type: Function, default: null },
@@ -189,6 +190,7 @@ const headerFontSize = computed(() => {
         :hint="hint"
         :persistent-hint="!!hint"
         :error-messages="error"
+        :rules="rules"
         @click:clear.stop="emit('update:modelValue', range ? { start: null, end: null } : '')"
       />
     </template>

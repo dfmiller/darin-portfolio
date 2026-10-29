@@ -40,9 +40,27 @@ const rules = {
   phone: (v) => (v || '').replace(/\D/g, '').length >= 10 || 'Enter a valid phone number',
   birthdate: (v) => {
     if (!v) return 'Required'
-    const age = new Date().getFullYear() - new Date(v).getFullYear()
-    if (age < 0 || age > 150) return 'Invalid birthdate'
-    return (age >= 18) || 'You must be at least 18 years old'
+
+    const dob = new Date(v)
+    if (isNaN(dob.getTime())) return 'Invalid birthdate'
+
+    const today = new Date()
+    today.setHours(0, 0, 0, 0)
+    dob.setHours(0, 0, 0, 0)
+
+    if (dob > today) return 'Birthdate cannot be in the future'
+
+    let age = today.getFullYear() - dob.getFullYear()
+    const monthDiff = today.getMonth() - dob.getMonth()
+    
+    if (monthDiff < 0 || (monthDiff === 0 && today.getDate() < dob.getDate())) {
+      age--
+    }
+
+    if (age > 150) return 'Invalid birthdate'
+    
+    // Return true if valid, or the error string if invalid
+    return age >= 18 || 'You must be at least 18 years old'
   },
 }
 
@@ -188,10 +206,10 @@ async function pay() {
           <v-form ref="formRef" @submit.prevent="submitStudent">
             <v-row dense>
               <v-col cols="12" sm="7">
-              <BaseTextField v-model="form.email" label="Email" type="email" variant="outlined"
-                :rules="[rules.required, rules.email]" />
+                <BaseTextField v-model="form.email" label="Email" type="email" variant="outlined"
+                  :rules="[rules.required, rules.email]" />
               </v-col>
-              <v-col cols="12" sm="5" class="text-caption text-medium-emphasis pt-2">
+              <v-col cols="12" sm="5" class="text-caption pt-2">
                 By entering your contact info, you agree to receive correspondence from us.
               </v-col>
             </v-row>
@@ -433,6 +451,25 @@ async function pay() {
 </template>
 
 <style scoped>
+
+/* Import the font specifically for this component */
+@import url('https://fonts.googleapis.com/css2?family=Xmind:ital,wght@0,100..900;1,100..900&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Source+Code+Pro:ital,wght@0,200..900;1,200..900&display=swap');
+
+.page {
+  &,
+  .text-h6,
+  .text-caption,
+  .text-body-2 {
+    font-family: 'Xmind', sans-serif;
+  }
+
+  .mono {
+    font-family: 'Source Code Pro', monospace;
+  }
+}
+
+
 .page { max-width: 1200px; margin: 0 auto; padding: 0 24px 48px; background: #fff; color: #333; }
 .brand { font-size: 28px; font-weight: 500; color: #1a237e; display: flex; align-items: center; gap: 8px; }
 .top-link { color: #3949ab; font-weight: 700; text-decoration: none; font-size: 15px; }

@@ -64,8 +64,9 @@ defineProps<{
 
 .page-header-aside {
   display: flex;
+  flex-direction: row-reverse;
   align-items: center;
-  gap: 16px;
+  gap: 32px;
 }
 
 .page-header-tabs {

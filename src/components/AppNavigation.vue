@@ -24,7 +24,7 @@
         color="primary"
         link
       />
-      <v-divider v-if="!mobile" class="mb-2" />
+      <v-divider v-if="!mobile" class="my-2" />
       <v-btn
         v-if="!mobile"
         class="mb-2"
@@ -67,5 +67,9 @@ const items = [
 .app-navigation {
   height: 100%;
   z-index: 10;
+}
+
+:deep(.v-list-item__prepend)   {
+  margin-left: 4px;
 }
 </style>

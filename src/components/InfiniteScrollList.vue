@@ -16,7 +16,6 @@
         rounded="0"
         flat
       >
-        <!-- Render each record however you like -->
         <slot :item="entry.item" :page="entry.page" />
       </v-card>
     </div>
@@ -71,104 +70,117 @@
   </div>
 </template>
 
-<script setup>
-/**
- * Infinite-scrolling, pageable list for any limit/skip style JSON API.
- *
- * The API must return the records in an array plus a total count, e.g.
- *   { users: [...], total: 208, skip: 0, limit: 10 }
- *
- * Slot props (default slot): { item, page }
- * Error slot props:          { error, retry }
- */
+<script
+  setup
+  lang="ts"
+  generic="T extends Record<string, any> = Record<string, any>"
+>
 import { computed, nextTick, onBeforeUnmount, onMounted, ref, watch } from 'vue'
+import type { Ref } from 'vue'
 
-const props = defineProps({
-  /** Endpoint to page through, e.g. https://dummyjson.com/users */
-  url: { type: String, required: true },
-  pageSize: { type: Number, default: 10 },
-  /** Property name, or function(item) => key, used for v-for keys */
-  itemKey: { type: [String, Function], default: 'id' },
-  /** Response property holding the records. Auto-detected (first array) if omitted */
-  dataKey: { type: String, default: null },
-  /** Response property holding the total record count */
-  totalKey: { type: String, default: 'total' },
-  limitParam: { type: String, default: 'limit' },
-  skipParam: { type: String, default: 'skip' },
-  /** Hash param used to sync the current page (#page=N). Pass null to disable */
-  hashKey: { type: String, default: 'page' },
-  /** Max pages kept in the DOM at once (minimum 2) */
-  maxLoadedPages: { type: Number, default: 3 },
-  /** px from an edge that triggers loading */
-  scrollThreshold: { type: Number, default: 100 },
-  /** Plural noun used in the pager and error text */
-  itemLabel: { type: String, default: 'items' },
-  /** Optional CSS selector to teleport a "rendered items" counter to */
-  teleportTo: { type: String, default: null },
-  /** Height (px) of the layout above the list, subtracted from the list height */
-  headerHeight: { type: Number, default: 75 },
-})
+const props = withDefaults(
+  defineProps<{
+    url: string
+    pageSize?: number
+    itemKey?: string | ((item: T) => string | number)
+    dataKey?: string | null
+    totalKey?: string
+    limitParam?: string
+    skipParam?: string
+    hashKey?: string | null
+    maxLoadedPages?: number
+    scrollThreshold?: number
+    itemLabel?: string
+    teleportTo?: string | null
+    headerHeight?: number
+  }>(),
+  {
+    pageSize: 10,
+    itemKey: 'id',
+    dataKey: null,
+    totalKey: 'total',
+    limitParam: 'limit',
+    skipParam: 'skip',
+    hashKey: 'page',
+    maxLoadedPages: 3,
+    scrollThreshold: 100,
+    itemLabel: 'items',
+    teleportTo: null,
+    headerHeight: 75,
+  },
+)
 
-const emit = defineEmits(['error'])
+const emit = defineEmits<{
+  error: [error: Error]
+}>()
 
-const scroller = ref(null)
-const items = ref([]) // [{ key, page, item }]
-const page = ref(1) // page at the top of the viewport
+defineSlots<{
+  default(props: { item: T; page: number }): unknown
+  error(props: { error: Error; retry: () => void }): unknown
+}>()
+
+interface Entry {
+  key: string | number
+  page: number
+  item: T
+}
+
+const scroller = ref<HTMLElement | null>(null)
+const items = ref([]) as Ref<Entry[]>
+const page = ref(1)
 const total = ref(0)
 const loading = ref(false)
-const error = ref(null)
+const error = ref<Error | null>(null)
 
-let firstPage = 1 // first page in the DOM
-let lastPage = 0 // last page in the DOM
-let generation = 0 // bumped on every jump so stale requests are discarded
+let firstPage = 1
+let lastPage = 0
+let generation = 0
 
 const pageCount = computed(() => Math.ceil(total.value / props.pageSize))
 const pageOptions = computed(() => Array.from({ length: pageCount.value }, (_, i) => i + 1))
 
-// --- Data ------------------------------------------------------------------
-
-async function fetchPage(n) {
-  // Resolve against the current location so relative URLs work, and keep any
-  // existing query string (e.g. /users/search?q=john)
+async function fetchPage(n: number): Promise<unknown> {
   const url = new URL(props.url, window.location.href)
-  url.searchParams.set(props.limitParam, props.pageSize)
-  url.searchParams.set(props.skipParam, (n - 1) * props.pageSize)
+  url.searchParams.set(props.limitParam, String(props.pageSize))
+  url.searchParams.set(props.skipParam, String((n - 1) * props.pageSize))
 
   const res = await fetch(url)
   if (!res.ok) throw new Error(`HTTP ${res.status}`)
   return res.json()
 }
 
-function extractRecords(data) {
-  if (Array.isArray(data)) return data
-  if (props.dataKey) return data?.[props.dataKey] ?? []
-  return Object.values(data ?? {}).find(Array.isArray) ?? []
+function extractRecords(data: unknown): T[] {
+  if (Array.isArray(data)) return data as T[]
+  const obj = (data ?? {}) as Record<string, unknown>
+  if (props.dataKey) return (obj[props.dataKey] as T[] | undefined) ?? []
+  return (Object.values(obj).find(Array.isArray) as T[] | undefined) ?? []
 }
 
-function keyFor(item, pageNumber, index) {
+function keyFor(item: T, pageNumber: number, index: number): string | number {
   const key = typeof props.itemKey === 'function' ? props.itemKey(item) : item?.[props.itemKey]
   return key ?? `${pageNumber}-${index}`
 }
 
-const toEntries = (data, pageNumber) =>
+const toEntries = (data: unknown, pageNumber: number): Entry[] =>
   extractRecords(data).map((item, index) => ({
     key: keyFor(item, pageNumber, index),
     page: pageNumber,
     item,
   }))
 
-function readTotal(data) {
-  const value = Number(data?.[props.totalKey])
+function readTotal(data: unknown): number {
+  const value = Number((data as Record<string, unknown> | null)?.[props.totalKey])
   if (!Number.isFinite(value)) {
     throw new Error(`Response has no numeric "${props.totalKey}" property`)
   }
   return value
 }
 
-function fail(err) {
-  console.error(`Failed to load ${props.itemLabel}:`, err)
-  error.value = err
-  emit('error', err)
+function fail(err: unknown) {
+  const normalized = err instanceof Error ? err : new Error(String(err))
+  console.error(`Failed to load ${props.itemLabel}:`, normalized)
+  error.value = normalized
+  emit('error', normalized)
 }
 
 function retry() {
@@ -180,9 +192,7 @@ function retry() {
   }
 }
 
-// --- URL hash (#page=N) ------------------------------------------------------
-
-function pageFromHash() {
+function pageFromHash(): number {
   if (!props.hashKey) return 1
   const n = Number(new URLSearchParams(location.hash.slice(1)).get(props.hashKey))
   return Number.isInteger(n) && n >= 1 ? n : 1
@@ -192,11 +202,9 @@ function updateHash() {
   if (!props.hashKey || !pageCount.value) return
   try {
     const params = new URLSearchParams(location.hash.slice(1))
-    params.set(props.hashKey, page.value)
-    // Pass the existing state through so vue-router's history entry stays intact
+    params.set(props.hashKey, String(page.value))
     history.replaceState(history.state, '', `#${params}`)
   } catch {
-    // History API unavailable (e.g. sandboxed frame); the hash is optional
   }
 }
 
@@ -207,14 +215,11 @@ function onHashChange() {
 
 watch(page, updateHash)
 
-// --- Navigation --------------------------------------------------------------
-
-// Scroll to a page if it's already loaded, otherwise restart the list there.
-function goToPage(target) {
-  if (target < 1 || target > pageCount.value) return
-
+function goToPage(target: number) {
   const el = scroller.value
-  const tile = el.querySelector(`[data-page="${target}"]`)
+  if (!el || target < 1 || target > pageCount.value) return
+
+  const tile = el.querySelector<HTMLElement>(`[data-page="${target}"]`)
   if (tile) {
     const offset = tile.getBoundingClientRect().top - el.getBoundingClientRect().top
     page.value = target
@@ -224,9 +229,7 @@ function goToPage(target) {
   }
 }
 
-// --- Loading ---------------------------------------------------------------
-
-async function jumpTo(target) {
+async function jumpTo(target: number) {
   const gen = ++generation
   loading.value = true
   error.value = null
@@ -237,7 +240,7 @@ async function jumpTo(target) {
 
     total.value = readTotal(data)
     if (total.value && target > pageCount.value) {
-      target = pageCount.value // URL asked for a page past the end
+      target = pageCount.value
       data = await fetchPage(target)
       if (gen !== generation) return
     }
@@ -245,7 +248,7 @@ async function jumpTo(target) {
     page.value = firstPage = lastPage = target
     items.value = toEntries(data, target)
     await nextTick()
-    scroller.value.scrollTop = 0
+    if (scroller.value) scroller.value.scrollTop = 0
   } catch (err) {
     if (gen === generation) fail(err)
   } finally {
@@ -289,13 +292,12 @@ async function loadPrevious() {
     const data = await fetchPage(target)
     if (gen !== generation) return
 
-    // Keep what the user is looking at in place while content is added above it
     const el = scroller.value
-    const heightBefore = el.scrollHeight
+    const heightBefore = el?.scrollHeight ?? 0
     firstPage = target
     items.value.unshift(...toEntries(data, target))
     await nextTick()
-    el.scrollTop += el.scrollHeight - heightBefore
+    if (el) el.scrollTop += el.scrollHeight - heightBefore
   } catch (err) {
     if (gen === generation) fail(err)
   } finally {
@@ -309,7 +311,6 @@ async function loadPrevious() {
 
 function checkEdges() {
   const el = scroller.value
-  // Stop while an error is showing so a failing endpoint isn't hammered in a loop
   if (loading.value || error.value || !el) return
 
   const nearBottom = el.scrollHeight - el.scrollTop <= el.clientHeight + props.scrollThreshold
@@ -321,7 +322,6 @@ function checkEdges() {
     loadPrevious()
   }
 
-  // Too many pages in the DOM: trim from the edge the user is moving away from
   if (lastPage - firstPage + 1 >= Math.max(props.maxLoadedPages, 2)) {
     if (el.scrollTop < props.scrollThreshold * 2) {
       pruneBottom()
@@ -333,6 +333,7 @@ function checkEdges() {
 
 async function pruneTop() {
   const el = scroller.value
+  if (!el) return
   const heightBefore = el.scrollHeight
   const scrollTopBefore = el.scrollTop
 
@@ -340,7 +341,6 @@ async function pruneTop() {
   firstPage++
 
   await nextTick()
-  // Adjust scroll position so content doesn't jump
   el.scrollTop = scrollTopBefore - (heightBefore - el.scrollHeight)
 }
 
@@ -349,14 +349,15 @@ function pruneBottom() {
   lastPage--
 }
 
-// The current page is the page of the card at the top of the viewport.
 function updateCurrentPage() {
   const el = scroller.value
+  if (!el) return
   const top = el.getBoundingClientRect().top
 
-  for (const card of el.children) {
+  for (const card of Array.from(el.children) as HTMLElement[]) {
     if (card.getBoundingClientRect().bottom > top + 1) {
-      page.value = Number(card.dataset.page)
+      const n = Number(card.dataset.page)
+      if (Number.isFinite(n)) page.value = n
       return
     }
   }
@@ -367,9 +368,6 @@ function onScroll() {
   checkEdges()
 }
 
-// --- Lifecycle -------------------------------------------------------------
-
-// A different endpoint (or page size) means a different data set: start over.
 watch(
   () => [props.url, props.pageSize],
   () => {
@@ -397,7 +395,6 @@ defineExpose({ goToPage, retry })
 .infinite-list {
   display: flex;
   flex-direction: column;
-  /* Fill the space inside <v-main>, minus any app bars / footers */
   height: calc(
     100dvh - var(--v-layout-top, 0px) - var(--v-layout-bottom, 0px) - var(--infinite-list-header, 0px)
   );
@@ -407,7 +404,6 @@ defineExpose({ goToPage, retry })
   flex: 1;
   min-height: 0;
   overflow-y: auto;
-  /* We restore the scroll position ourselves when prepending a page */
   overflow-anchor: none;
 }
 

@@ -419,7 +419,7 @@ async function pay() {
                 variant="outlined"
                 :error-messages="couponError"
               />
-              <BaseButton variant="outlined" rounded="pill" color="indigo-lighten-3" :disabled="!coupon" @click="applyCoupon">Apply</BaseButton>
+              <BaseButton rounded="pill" color="indigo-lighten-3" :disabled="!coupon" @click="applyCoupon">Apply</BaseButton>
             </div>
             <div v-if="discount" class="text-caption text-success mt-1">Coupon applied: -$ {{ discount }}</div>
 
